@@ -7,7 +7,8 @@ public class PlayerInventory : MonoBehaviour
 
     public void AddKey(string keyID)
     {
-        keys.Add(keyID);
+        if (!keys.Contains(keyID))
+            keys.Add(keyID);
     }
 
     public bool HasKey(string keyID)
@@ -17,7 +18,7 @@ public class PlayerInventory : MonoBehaviour
 
     public void UseKey(string keyID)
     {
-        if (HasKey(keyID))
+        if (keys.Contains(keyID))
             keys.Remove(keyID);
     }
 }

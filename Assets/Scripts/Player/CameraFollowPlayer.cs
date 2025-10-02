@@ -19,4 +19,11 @@ public class CameraFollowPlayer : MonoBehaviour
 
         transform.position = Vector3.Lerp(transform.position, targetPosition, smoothSpeed * Time.deltaTime);
     }
+
+    public void ResetPositionImmediate()
+    {
+        if (player == null) return;
+        transform.position = new Vector3(player.position.x + offset.x, transform.position.y, transform.position.z);
+    }
+
 }

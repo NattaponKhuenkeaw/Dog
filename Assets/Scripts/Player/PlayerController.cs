@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public interface IInteractable
 {
@@ -15,8 +16,11 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;
     public SpriteRenderer spriteRenderer;
 
-    [Header("Current Interactable")]
-    public IInteractable currentInteractable;
+    [Header("Inventory")]
+    public List<string> collectedKeys = new List<string>();
+
+    [Header("Interactables Nearby")]
+    private readonly List<IInteractable> interactablesNearby = new List<IInteractable>();
 
     private float moveDir = 0f;
     private bool isDodging = false;
@@ -75,6 +79,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public void Attack() => Debug.Log("Attack!");
+
     public void Dodge()
     {
         if (!isDodging)
@@ -87,8 +92,8 @@ public class PlayerController : MonoBehaviour
 
     public void Interact()
     {
-        if (currentInteractable != null)
-            currentInteractable.OnInteract(this);
+        if (interactablesNearby.Count > 0)
+            interactablesNearby[0].OnInteract(this);
     }
 
     public void Move(float value) => touchMoveDir = value;
@@ -96,17 +101,34 @@ public class PlayerController : MonoBehaviour
     public void DodgeButton() => touchDodge = true;
     public void InteractButton() => touchInteract = true;
 
+    public void AddKey(string keyID)
+    {
+        if (!collectedKeys.Contains(keyID))
+            collectedKeys.Add(keyID);
+    }
+
+    public bool HasKey(string keyID)
+    {
+        return collectedKeys.Contains(keyID);
+    }
+
+    public void UseKey(string keyID)
+    {
+        if (HasKey(keyID))
+            collectedKeys.Remove(keyID);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         var interactable = other.GetComponent<IInteractable>();
-        if (interactable != null)
-            currentInteractable = interactable;
+        if (interactable != null && !interactablesNearby.Contains(interactable))
+            interactablesNearby.Add(interactable);
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         var interactable = other.GetComponent<IInteractable>();
-        if (interactable != null && currentInteractable == interactable)
-            currentInteractable = null;
+        if (interactable != null && interactablesNearby.Contains(interactable))
+            interactablesNearby.Remove(interactable);
     }
 }

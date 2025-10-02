@@ -3,10 +3,17 @@ using UnityEngine.SceneManagement;
 
 public class Door : MonoBehaviour, IInteractable
 {
-    [Header("Door Settings")]
+    [Header("Key Settings")]
+    public bool requiresKey = false;
     public string keyID;
+
+    [Header("Warp Settings (Next Scene)")]
     public bool isSceneDoor = false;
     public string sceneName;
+
+    [Header("Warp Settings (Same Scene)")]
+    public bool warpInScene = false;
+    public Transform warpTarget;
 
     [Header("Door Graphics")]
     public SpriteRenderer doorRenderer;
@@ -20,15 +27,14 @@ public class Door : MonoBehaviour, IInteractable
     {
         if (isOpen) return;
 
-        var inventory = player.GetComponent<PlayerInventory>();
-        if (!string.IsNullOrEmpty(keyID) && inventory != null)
+        if (requiresKey)
         {
-            if (!inventory.HasKey(keyID))
+            if (!player.HasKey(keyID))
             {
                 Debug.Log("Door is locked!");
                 return;
             }
-            inventory.UseKey(keyID);
+            player.UseKey(keyID);
         }
 
         ToggleDoor(player);
@@ -39,6 +45,16 @@ public class Door : MonoBehaviour, IInteractable
         if (isSceneDoor && !string.IsNullOrEmpty(sceneName))
         {
             SceneManager.LoadScene(sceneName);
+        }
+        else if (warpInScene && warpTarget != null)
+        {
+            player.transform.position = warpTarget.position;
+
+            var cameraFollow = Camera.main.GetComponent<CameraFollowPlayer>();
+            if (cameraFollow != null)
+            {
+                cameraFollow.ResetPositionImmediate();
+            }
         }
         else
         {
