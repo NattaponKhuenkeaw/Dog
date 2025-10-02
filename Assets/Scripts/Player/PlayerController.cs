@@ -100,6 +100,7 @@ public class PlayerController : MonoBehaviour
     public void AttackButton() => touchAttack = true;
     public void DodgeButton() => touchDodge = true;
     public void InteractButton() => touchInteract = true;
+    public void SearchButton() => touchInteract = true;
 
     public void AddKey(string keyID)
     {
