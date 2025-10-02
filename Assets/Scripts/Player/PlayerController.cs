@@ -1,18 +1,32 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public interface IInteractable
+{
+    void OnInteract(PlayerController player);
+}
+
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement")]
     public float moveSpeed = 5f;
     public float dodgeSpeed = 12f;
     public float dodgeDuration = 0.2f;
     public Rigidbody2D rb;
     public SpriteRenderer spriteRenderer;
 
-    private float moveDir;
-    private PlayerControls controls;
+    [Header("Current Interactable")]
+    public IInteractable currentInteractable;
+
+    private float moveDir = 0f;
     private bool isDodging = false;
     private float dodgeTime;
+
+    private PlayerControls controls;
+    private float touchMoveDir = 0f;
+    private bool touchAttack = false;
+    private bool touchDodge = false;
+    private bool touchInteract = false;
 
     private void Awake()
     {
@@ -21,71 +35,78 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
-        controls.Player.Enable();
-
-        controls.Player.MoveLeft.performed += ctx => moveDir = -1f;
-        controls.Player.MoveLeft.canceled += ctx => { if (!controls.Player.MoveRight.IsPressed()) moveDir = 0f; };
-
-        controls.Player.MoveRight.performed += ctx => moveDir = 1f;
-        controls.Player.MoveRight.canceled += ctx => { if (!controls.Player.MoveLeft.IsPressed()) moveDir = 0f; };
-
-        controls.Player.Attack.performed += OnAttack;
-        controls.Player.Interact.performed += OnInteract;
-        controls.Player.Dodge.performed += OnDodge;
+        controls.Enable();
     }
 
     private void OnDisable()
     {
-        controls.Player.MoveLeft.performed -= ctx => moveDir = -1f;
-        controls.Player.MoveLeft.canceled -= ctx => { if (!controls.Player.MoveRight.IsPressed()) moveDir = 0f; };
-
-        controls.Player.MoveRight.performed -= ctx => moveDir = 1f;
-        controls.Player.MoveRight.canceled -= ctx => { if (!controls.Player.MoveLeft.IsPressed()) moveDir = 0f; };
-
-        controls.Player.Attack.performed -= OnAttack;
-        controls.Player.Interact.performed -= OnInteract;
-        controls.Player.Dodge.performed -= OnDodge;
-
-        controls.Player.Disable();
+        controls.Disable();
     }
 
-    private void OnAttack(InputAction.CallbackContext ctx)
+    private void Update()
     {
-        Debug.Log("Attack!");
-    }
+        float inputDir = controls.Player.Move.ReadValue<float>();
 
-    private void OnInteract(InputAction.CallbackContext ctx)
-    {
-        Debug.Log("Interact with item!");
-    }
-
-    private void OnDodge(InputAction.CallbackContext ctx)
-    {
-        if (!isDodging)
+        if (Mathf.Abs(inputDir) < 0.01f)
         {
-            Debug.Log("Dodge!");
-            isDodging = true;
-            dodgeTime = Time.time + dodgeDuration;
+            if (Keyboard.current.aKey.isPressed) inputDir = -1f;
+            if (Keyboard.current.dKey.isPressed) inputDir = 1f;
         }
+
+        moveDir = touchMoveDir != 0f ? touchMoveDir : inputDir;
+
+        if (moveDir > 0.01f) spriteRenderer.flipX = false;
+        else if (moveDir < -0.01f) spriteRenderer.flipX = true;
+
+        if (controls.Player.Attack.WasPerformedThisFrame() || touchAttack) Attack();
+        if (controls.Player.Dodge.WasPerformedThisFrame() || touchDodge) Dodge();
+        if (controls.Player.Interact.WasPerformedThisFrame() || touchInteract) Interact();
+
+        touchAttack = touchDodge = touchInteract = false;
     }
 
     private void FixedUpdate()
     {
-        if (isDodging)
-        {
-            rb.linearVelocity = new Vector2(moveDir * dodgeSpeed, rb.linearVelocity.y);
+        float speed = isDodging ? dodgeSpeed : moveSpeed;
+        rb.linearVelocity = new Vector2(moveDir * speed, rb.linearVelocity.y);
 
-            if (Time.time >= dodgeTime)
-                isDodging = false;
-        }
-        else
-        {
-            rb.linearVelocity = new Vector2(moveDir * moveSpeed, rb.linearVelocity.y);
-        }
+        if (isDodging && Time.time >= dodgeTime)
+            isDodging = false;
+    }
 
-        if (moveDir > 0.01f)
-            spriteRenderer.flipX = false;
-        else if (moveDir < -0.01f)
-            spriteRenderer.flipX = true;
+    public void Attack() => Debug.Log("Attack!");
+    public void Dodge()
+    {
+        if (!isDodging)
+        {
+            isDodging = true;
+            dodgeTime = Time.time + dodgeDuration;
+            Debug.Log("Dodge!");
+        }
+    }
+
+    public void Interact()
+    {
+        if (currentInteractable != null)
+            currentInteractable.OnInteract(this);
+    }
+
+    public void Move(float value) => touchMoveDir = value;
+    public void AttackButton() => touchAttack = true;
+    public void DodgeButton() => touchDodge = true;
+    public void InteractButton() => touchInteract = true;
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        var interactable = other.GetComponent<IInteractable>();
+        if (interactable != null)
+            currentInteractable = interactable;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        var interactable = other.GetComponent<IInteractable>();
+        if (interactable != null && currentInteractable == interactable)
+            currentInteractable = null;
     }
 }
