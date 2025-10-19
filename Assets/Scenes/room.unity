@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 26135312}
   - component: {fileID: 26135311}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: LordScenes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -417,8 +417,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::roomManag
   rooms:
-  - {fileID: 5730015558334164387, guid: 210b17e2cf6fff0409ad8035c510c029, type: 3}
-  - {fileID: 4482133891699726004, guid: d6c6469a0b2625f4889ca4972f943526, type: 3}
+  - roomPrefab: {fileID: 5730015558334164387, guid: 210b17e2cf6fff0409ad8035c510c029, type: 3}
+    empati: 1
+    items:
+    - prefab: {fileID: 2170897902466381338, guid: b82e1078c67d79748b0998cbf7592ead, type: 3}
+      spawnChance: 0.508
+    - prefab: {fileID: 558678436673783461, guid: fc0a99421c8e91743ad0aaf8e8f35dca, type: 3}
+      spawnChance: 0.54
+    - prefab: {fileID: 4659870552510070826, guid: c34a7b2f9c299044eb326cec40b37e2e, type: 3}
+      spawnChance: 0.532
+    - prefab: {fileID: 2053349909453390601, guid: 8aac1d3c8054e64458b74abf7a529d51, type: 3}
+      spawnChance: 0.119
+    - prefab: {fileID: 1285277526810035415, guid: e501606164817404f8c58ed57c3a8a6d, type: 3}
+      spawnChance: 0.119
+  - roomPrefab: {fileID: 4482133891699726004, guid: d6c6469a0b2625f4889ca4972f943526, type: 3}
+    empati: 2
+    items:
+    - prefab: {fileID: 2170897902466381338, guid: b82e1078c67d79748b0998cbf7592ead, type: 3}
+      spawnChance: 0.583
+    - prefab: {fileID: 558678436673783461, guid: fc0a99421c8e91743ad0aaf8e8f35dca, type: 3}
+      spawnChance: 0.567
+    - prefab: {fileID: 4659870552510070826, guid: c34a7b2f9c299044eb326cec40b37e2e, type: 3}
+      spawnChance: 0.583
+    - prefab: {fileID: 2053349909453390601, guid: 8aac1d3c8054e64458b74abf7a529d51, type: 3}
+      spawnChance: 0.099
+    - prefab: {fileID: 1285277526810035415, guid: e501606164817404f8c58ed57c3a8a6d, type: 3}
+      spawnChance: 0.091
 --- !u!4 &576268049
 Transform:
   m_ObjectHideFlags: 0
