@@ -17,7 +17,7 @@ public class FlashlightController : MonoBehaviour
 
     void Update()
     {
-        // อ่านค่า Vector2 จาก Action "Look" (หรือ "Move" ถ้าใช้แทน)
+        
         Vector2 input = playerInput.actions["Look"].ReadValue<Vector2>();
 
         // แปลงค่าเป็น Vector3 สำหรับแกน X,Y

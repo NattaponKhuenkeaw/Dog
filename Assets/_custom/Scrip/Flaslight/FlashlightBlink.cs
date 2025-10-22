@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Rendering.Universal; // ต้องใช้ถ้าเป็น Light2D
 
 public class FlashlightFlicker : MonoBehaviour
@@ -26,4 +27,5 @@ public class FlashlightFlicker : MonoBehaviour
             timer = 0f;
         }
     }
+    
 }

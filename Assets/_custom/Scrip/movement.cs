@@ -4,9 +4,15 @@ using UnityEngine.InputSystem;
 public class Movement : MonoBehaviour
 {
     private PlayerInput playerInput;
-    public float walkSpeed = 2f;   // ความเร็วเดิน
-    public float runSpeed = 5f;    // ความเร็ววิ่ง
+
+    [Header("Movement Settings")]
+    public float walkSpeed = 2f;
+    public float runSpeed = 5f;
     private float currentSpeed;
+
+    [Header("Energy Settings")]
+    public bool useEnergySystem = true;
+    public float runEnergyCost = 3f; // ใช้พลังต่อวินาทีตอนวิ่ง
 
     void Start()
     {
@@ -15,27 +21,40 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        // อ่านค่าจาก Virtual Joystick (On-Screen Stick → Left Stick)
         Vector2 input = playerInput.actions["Move"].ReadValue<Vector2>();
-
-        // เอาเฉพาะแกน X (เกม 2D side-scroll)
         float x = input.x;
-
-        // วัดระดับการเอียงของจอย
         float inputMagnitude = Mathf.Abs(x);
 
-        // ถ้าเอียงน้อย = เดิน, ถ้ามาก = วิ่ง
-        if (inputMagnitude > 0.1f && inputMagnitude <= 0.5f)
+        float currentEnergy = GameManager.instance.energy;
+
+        // 🔹 กำหนดความเร็ว
+        if (inputMagnitude > 0.1f && inputMagnitude <= 0.6f)
+        {
             currentSpeed = walkSpeed;
-        else if (inputMagnitude > 0.5f)
-            currentSpeed = runSpeed;
+            GameManager.instance.isRunning = false;
+        }
+        else if (inputMagnitude > 0.6f)
+        {
+            currentSpeed = currentEnergy > 0 ? runSpeed : walkSpeed;
+            GameManager.instance.isRunning = currentSpeed == runSpeed;
+        }
         else
-            currentSpeed = 0f; // ไม่ขยับ
+        {
+            currentSpeed = 0f;
+            GameManager.instance.isRunning = false;
+        }
 
         // เคลื่อนที่
         Vector3 move = new Vector3(x, 0, 0);
         transform.position += move * currentSpeed * Time.deltaTime;
 
-        // (ถ้ามีอนิเมชัน ก็สามารถใส่ Animator.SetFloat("Speed", Mathf.Abs(x)) ได้)
+        // ส่งสถานะการเคลื่อนไหว
+        GameManager.instance.isMoving = currentSpeed > 0;
+
+        // ใช้พลังงานตอนวิ่ง
+        if (useEnergySystem && GameManager.instance.isRunning && currentEnergy > 0)
+        {
+            GameManager.instance.UseEnergy(runEnergyCost * Time.deltaTime);
+        }
     }
 }
