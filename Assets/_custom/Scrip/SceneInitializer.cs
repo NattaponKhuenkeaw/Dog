@@ -26,7 +26,7 @@ public class SceneInitializer : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("⚠️ ไม่มี GameManager ใน Scene นี้!");
+            Debug.LogWarning("ไม่มี GameManager ใน Scene นี้!");
         }
 
         if (flashlightButton != null)

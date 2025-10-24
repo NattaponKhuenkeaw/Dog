@@ -10,6 +10,6 @@ public class Enemy : MonoBehaviour
             GameManager.instance.TakeDamage(damageToPlayer);
 
         Debug.Log($"{name} damaged player for {damageToPlayer}!");
-        Destroy(gameObject); // ทำลายตัวเอง
+        Destroy(gameObject); 
     }
 }

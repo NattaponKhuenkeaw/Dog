@@ -18,10 +18,7 @@ public class DoorClick : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(touchPos, Vector2.zero);
             Debug.Log("Click ที่: " + touchPos);
 
-            if (hit.collider != null)
-            {
-                Debug.Log("Raycast โดน: " + hit.collider.name);
-            }
+            
 
             if (hit.collider != null && hit.collider.gameObject == gameObject)
             {
