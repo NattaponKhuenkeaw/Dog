@@ -603,8 +603,6 @@ MonoBehaviour:
     items:
     - prefab: {fileID: 2170897902466381338, guid: b82e1078c67d79748b0998cbf7592ead, type: 3}
       spawnChance: 0.508
-    - prefab: {fileID: 558678436673783461, guid: fc0a99421c8e91743ad0aaf8e8f35dca, type: 3}
-      spawnChance: 0.54
     - prefab: {fileID: 4659870552510070826, guid: c34a7b2f9c299044eb326cec40b37e2e, type: 3}
       spawnChance: 0.532
     - prefab: {fileID: 2053349909453390601, guid: 8aac1d3c8054e64458b74abf7a529d51, type: 3}
@@ -618,8 +616,6 @@ MonoBehaviour:
     items:
     - prefab: {fileID: 2170897902466381338, guid: b82e1078c67d79748b0998cbf7592ead, type: 3}
       spawnChance: 0.583
-    - prefab: {fileID: 558678436673783461, guid: fc0a99421c8e91743ad0aaf8e8f35dca, type: 3}
-      spawnChance: 0.567
     - prefab: {fileID: 4659870552510070826, guid: c34a7b2f9c299044eb326cec40b37e2e, type: 3}
       spawnChance: 0.583
     - prefab: {fileID: 2053349909453390601, guid: 8aac1d3c8054e64458b74abf7a529d51, type: 3}

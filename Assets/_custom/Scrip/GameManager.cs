@@ -180,4 +180,6 @@ public class GameManager : MonoBehaviour
         healthSlider = sceneHealthSlider;
         energySlider = sceneEnergySlider;
     }
+
+    
 }

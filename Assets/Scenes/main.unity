@@ -577,6 +577,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1ee37867e3ecc74e9a4c35152eb3f20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  doorClick: {fileID: 1646541853}
   walkSpeed: 5
   runSpeed: 8
   useEnergySystem: 1
@@ -1718,6 +1719,7 @@ MonoBehaviour:
   flashlightText: {fileID: 526517959}
   healthSlider: {fileID: 1456863606}
   energySlider: {fileID: 1456863605}
+  flashlightButton: {fileID: 0}
 --- !u!4 &2075489315
 Transform:
   m_ObjectHideFlags: 0

@@ -5,11 +5,19 @@ using UnityEngine.InputSystem;
 public class DoorClick : MonoBehaviour
 {
     public string sceneName;
-    private bool playerIsNear = false;
+    public static bool playerIsNear = false;
+    
 
-    void Update()
+    
+
+
+   /* void Update()
     {
-        // Mouse (PC)
+
+        
+
+
+        / Mouse (PC)
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
@@ -61,9 +69,14 @@ public class DoorClick : MonoBehaviour
                 }
             }
         }
+    }*/
+
+    public void OpenDoor()
+    {
+        SceneManager.LoadScene(sceneName);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
@@ -72,7 +85,7 @@ public class DoorClick : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {

@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class Movement : MonoBehaviour
 {
+    public DoorClick doorClick;
+
     private PlayerInput playerInput;
 
     [Header("Movement Settings")]
@@ -23,9 +25,12 @@ public class Movement : MonoBehaviour
     {
         Vector2 input = playerInput.actions["Move"].ReadValue<Vector2>();
         float x = input.x;
+        float y = input.y;
         float inputMagnitude = Mathf.Abs(x);
 
         float currentEnergy = GameManager.instance.energy;
+
+        
 
         // 🔹 กำหนดความเร็ว
         if (inputMagnitude > 0.1f && inputMagnitude <= 0.6f)
@@ -43,6 +48,12 @@ public class Movement : MonoBehaviour
             currentSpeed = 0f;
             GameManager.instance.isRunning = false;
         }
+
+        if (doorClick != null && y > 0.5f && DoorClick.playerIsNear)
+        {
+            doorClick.OpenDoor();
+        }
+
 
         // เคลื่อนที่
         Vector3 move = new Vector3(x, 0, 0);
