@@ -181,5 +181,10 @@ public class GameManager : MonoBehaviour
         energySlider = sceneEnergySlider;
     }
 
-    
+    // ---------------------------- //
+    //       เก็บของฮาฟฟู่
+    // ---------------------------- //
+
+
+
 }

@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class DoorClick : MonoBehaviour
 {
     public string sceneName;
-    public static bool playerIsNear = false;
+   
     
 
     
@@ -76,21 +76,5 @@ public class DoorClick : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-    public void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerIsNear = true;
-            Debug.Log("Player เข้ามาใกล้ประตูแล้ว");
-        }
-    }
-
-    public void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerIsNear = false;
-            Debug.Log("Player ออกจากประตูแล้ว");
-        }
-    }
+   
 }
