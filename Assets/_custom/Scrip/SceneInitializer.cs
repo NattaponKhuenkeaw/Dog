@@ -11,6 +11,7 @@ public class SceneInitializer : MonoBehaviour
     public Slider healthSlider;         
     public Slider energySlider;
     public Button flashlightButton;
+    public Image damageOverlay;
 
     void Start()
     {
@@ -21,7 +22,9 @@ public class SceneInitializer : MonoBehaviour
                 flashlight2D,
                 flashlightText,
                 healthSlider,
-                energySlider
+                energySlider,
+                damageOverlay
+
             );
         }
         else

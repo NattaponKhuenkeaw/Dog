@@ -1,28 +1,25 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using static Unity.Burst.Intrinsics.X86.Sse4_2;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
+    
+
     public DoorClick doorClick;
     private PlayerInput playerInput;
     private CapsuleCollider2D col;
-
+    private SpriteRenderer spriteRenderer;
 
     public bool playerIsNearDoor = false;
     public bool playerIsNearHide = false;
-
     public bool stopX = false;
-
-
 
     [Header("Hiding Settings")]
     public bool isHidden = false;        // ผู้เล่นซ่อนอยู่หรือไม่
     public float damageRate = 5f;        // เสียเลือดต่อรอบ
-    public float damageInterval = 2f;    // ทุกกี่วินาทีจะเสียเลือด
-    public float safeHideTime = 5f;      // ซ่อนได้ฟรีกี่วินาที (ไม่เสียเลือด)
+    public float safeHideTime = 5f;      // ซ่อนได้ฟรีกี่วินาที
     private Coroutine damageCoroutine;
-    private SpriteRenderer spriteRenderer;
 
     [Header("Movement Settings")]
     public float walkSpeed = 2f;
@@ -31,7 +28,7 @@ public class Player : MonoBehaviour
 
     [Header("Energy Settings")]
     public bool useEnergySystem = true;
-    public float runEnergyCost = 3f; // ใช้พลังต่อวินาทีตอนวิ่ง
+    public float runEnergyCost = 3f;
 
     void Start()
     {
@@ -46,10 +43,7 @@ public class Player : MonoBehaviour
         float x = input.x;
         float y = input.y;
         float inputMagnitude = Mathf.Abs(x);
-
         float currentEnergy = GameManager.instance.energy;
-
-        
 
         // 🔹 กำหนดความเร็ว
         if (inputMagnitude > 0.1f && inputMagnitude <= 0.6f)
@@ -67,63 +61,96 @@ public class Player : MonoBehaviour
             currentSpeed = 0f;
             GameManager.instance.isRunning = false;
         }
-        // เข้าประตู
+
+        // 🔹 เข้าประตู
         if (doorClick != null && y > 0.8f && playerIsNearDoor)
         {
             doorClick.OpenDoor();
         }
 
-
-
-
-
-
-
-        // ซ่อนตัว
-        if (playerIsNearHide && y > 0.8f )
+        // 🔹 ซ่อนตัว
+        if (playerIsNearHide && y > 0.8f && !isHidden)
         {
-             
-            isHidden = true;
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.enabled = false;
-            }
-            col.enabled = false;
-      
+            StartHiding();
         }
         else if (isHidden && y < -0.8f)
         {
-            
-            isHidden = false;           
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.enabled = true;
-            }
-            col.enabled = true;
-
+            StopHiding();
         }
 
-
-        // เคลื่อนที่
+        // 🔹 เคลื่อนที่
         if (isHidden || stopX)
         {
             x = 0f;
-            //FindObjectOfType<Player>().stopX = false;  // กลับมาขยับได้
-            //FindObjectOfType<Player>().stopX = true;   // หยุดแกน X
         }
+
         Vector3 move = new Vector3(x, 0, 0);
         transform.position += move * currentSpeed * Time.deltaTime;
 
-        // ส่งสถานะการเคลื่อนไหว
+        // ส่งสถานะ
         GameManager.instance.isMoving = currentSpeed > 0;
 
-        // ใช้พลังงานตอนวิ่ง
+        // 🔹 ใช้พลังงานตอนวิ่ง
         if (useEnergySystem && GameManager.instance.isRunning && currentEnergy > 0)
         {
             GameManager.instance.UseEnergy(runEnergyCost * Time.deltaTime);
         }
     }
 
+    // -------------------------------
+    // 🔸 ฟังก์ชันซ่อน / ออกจากที่ซ่อน
+    // -------------------------------
+    void StartHiding()
+    {
+        isHidden = true;
+        spriteRenderer.enabled = false;
+        col.enabled = false;
+
+        Debug.Log("เริ่มซ่อนตัว");
+
+        // เริ่มนับเวลา Coroutine
+        if (damageCoroutine != null)
+            StopCoroutine(damageCoroutine);
+        damageCoroutine = StartCoroutine(HideDamageRoutine());
+    }
+
+    void StopHiding()
+    {
+        isHidden = false;
+        spriteRenderer.enabled = true;
+        col.enabled = true;
+
+        Debug.Log("ออกจากการซ่อน");
+
+        if (damageCoroutine != null)
+            StopCoroutine(damageCoroutine);
+    }
+
+    // -------------------------------
+    // 🔸 Coroutine ทำดาเมจหลังซ่อนเกินเวลา
+    // -------------------------------
+    IEnumerator HideDamageRoutine()
+    {
+        yield return new WaitForSeconds(safeHideTime); // ซ่อนได้ฟรีก่อน 5 วิ
+
+        if (isHidden) // ถ้ายังซ่อนอยู่
+        {
+            GameManager.instance.TakeDamage((int)damageRate);
+            Debug.Log($"⛔ ซ่อนนานเกินไป เสียเลือด {damageRate}");
+
+            
+
+            StopHiding();
+        }
+    }
+
+    
+
+
+
+    // -------------------------------
+    // 🔸 ตรวจจับพื้นที่
+    // -------------------------------
     public void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Door"))

@@ -2,12 +2,20 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering.Universal;
+using System.Collections;
 
 
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+
+
+    [Header("Damage Overlay")]
+    public Image damageOverlay;
+    public float overlayDuration = 0.5f;  // เวลาที่หน้าจอแดง
+    public float overlayMaxAlpha = 0.5f;  // ความเข้มสูงสุดของสีแดง
+    private Coroutine overlayCoroutine;
 
     [Header("Player Stats")]
     public int health = 100;
@@ -63,6 +71,42 @@ public class GameManager : MonoBehaviour
     public void TakeDamage(int damage)
     {
         health = Mathf.Clamp(health - damage, 0, maxHealth);
+
+        if (overlayCoroutine != null)
+            StopCoroutine(overlayCoroutine);
+        overlayCoroutine = StartCoroutine(FlashDamageOverlay());
+    }
+
+    private IEnumerator FlashDamageOverlay()
+    {
+        if (damageOverlay == null)
+            yield break;
+
+        // เริ่มจากโปร่งใส -> แดง -> โปร่งใส
+        Color color = damageOverlay.color;
+
+        // เฟดเข้า
+        float t = 0f;
+        while (t < overlayDuration / 2)
+        {
+            t += Time.deltaTime;
+            color.a = Mathf.Lerp(0, overlayMaxAlpha, t / (overlayDuration / 2));
+            damageOverlay.color = color;
+            yield return null;
+        }
+
+        // เฟดออก
+        t = 0f;
+        while (t < overlayDuration / 2)
+        {
+            t += Time.deltaTime;
+            color.a = Mathf.Lerp(overlayMaxAlpha, 0, t / (overlayDuration / 2));
+            damageOverlay.color = color;
+            yield return null;
+        }
+
+        color.a = 0;
+        damageOverlay.color = color;
     }
 
     public void Heal(int amount)
@@ -172,13 +216,15 @@ public class GameManager : MonoBehaviour
     Light2D sceneFlashlight = null,
     TMP_Text sceneFlashlightText = null,
     Slider sceneHealthSlider = null,
-    Slider sceneEnergySlider = null
+    Slider sceneEnergySlider = null,
+    Image sceneDamageOverlay = null
     )
     {
         flashlight2D = sceneFlashlight;
         flashlightText = sceneFlashlightText;
         healthSlider = sceneHealthSlider;
         energySlider = sceneEnergySlider;
+        damageOverlay = sceneDamageOverlay;
     }
 
     // ---------------------------- //
