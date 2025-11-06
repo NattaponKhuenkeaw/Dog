@@ -1,10 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class FL_Manager : MonoBehaviour
 {
+    [Header("Jumpscare Settings")]
+    public Image jumpscareImage;    // รูป/วิดีโอ jumpscare ที่จะโผล่
+                                    // public AudioSource jumpscareSound;   // เสียงน่ากลัว
+    public float scareDuration = 1.5f;   // ระยะเวลาที่แสดง
+    public float fadeSpeed = 5f;
+
+
     [Header("Flicker Settings")]
     public bool enableFlicker = true;
     public float minIntensity = 0.5f;
@@ -23,6 +32,10 @@ public class FL_Manager : MonoBehaviour
     void Start()
     {
         light2D = GetComponent<Light2D>();
+
+        Color color = jumpscareImage.color;
+        color.a = 0f;
+        jumpscareImage.color = color;
     }
 
     void Update()
@@ -68,6 +81,7 @@ public class FL_Manager : MonoBehaviour
             enemiesHit[enemy] += Time.deltaTime;
             if (enemiesHit[enemy] >= timeToDamageEnemy)
             {
+                StartCoroutine(DoJumpscare());
                 enemy.DamagePlayer();
                 toRemove.Add(enemy);
             }
@@ -81,5 +95,30 @@ public class FL_Manager : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, flashlightRange);
+    }
+
+    IEnumerator DoJumpscare()
+    {
+        //if (jumpscareSound != null)
+        //  jumpscareSound.Play();
+
+        // เฟดเข้าภาพ
+        yield return StartCoroutine(FadeImage(1f));
+
+        // ค้างไว้ตามเวลา scareDuration
+        yield return new WaitForSeconds(scareDuration);
+
+        // เฟดออกภาพ
+        yield return StartCoroutine(FadeImage(0f));
+    }
+    IEnumerator FadeImage(float targetAlpha)
+    {
+        Color color = jumpscareImage.color;
+        while (!Mathf.Approximately(color.a, targetAlpha))
+        {
+            color.a = Mathf.MoveTowards(color.a, targetAlpha, Time.deltaTime * fadeSpeed);
+            jumpscareImage.color = color;
+            yield return null;
+        }
     }
 }

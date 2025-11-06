@@ -1,20 +1,18 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using System.Collections;
-
-
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-
     [Header("Damage Overlay")]
     public Image damageOverlay;
-    public float overlayDuration = 0.5f;  // เวลาที่หน้าจอแดง
-    public float overlayMaxAlpha = 0.5f;  // ความเข้มสูงสุดของสีแดง
+    public float overlayDuration = 0.5f;
+    public float overlayMaxAlpha = 0.5f;
     private Coroutine overlayCoroutine;
 
     [Header("Player Stats")]
@@ -35,8 +33,8 @@ public class GameManager : MonoBehaviour
     public float flashlightPower = 100f;
     public float maxFlashlightPower = 100f;
     public float flashlightDrainRate = 10f;
-    public Light2D flashlight2D;            // ใส่ใน Scene ที่มีไฟฉาย
-    public TMP_Text flashlightText;     // ใส่ใน Scene ที่มี UI
+    public Light2D flashlight2D;
+    public TMP_Text flashlightText;
 
     [Header("UI Sliders")]
     public Slider healthSlider;
@@ -46,6 +44,15 @@ public class GameManager : MonoBehaviour
     public bool isMoving = false;
     public bool isRunning = false;
 
+    [Header("Inventory System")]
+    public List<ItemData> inventory = new List<ItemData>();
+    public int maxInventorySize = 3;
+
+    [Header("Hotbar UI (3 ช่อง)")]
+    public GameObject[] slots = new GameObject[3];
+    private Button[] slotButtons;
+    private Image[] slotIcons;
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -53,7 +60,6 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         instance = this;
         DontDestroyOnLoad(gameObject);
     }
@@ -66,12 +72,11 @@ public class GameManager : MonoBehaviour
     }
 
     // ---------------------------- //
-    //      ระบบ HP/พลังงาน
+    // HP / Energy System
     // ---------------------------- //
     public void TakeDamage(int damage)
     {
         health = Mathf.Clamp(health - damage, 0, maxHealth);
-
         if (overlayCoroutine != null)
             StopCoroutine(overlayCoroutine);
         overlayCoroutine = StartCoroutine(FlashDamageOverlay());
@@ -79,13 +84,9 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator FlashDamageOverlay()
     {
-        if (damageOverlay == null)
-            yield break;
-
-        // เริ่มจากโปร่งใส -> แดง -> โปร่งใส
+        if (damageOverlay == null) yield break;
         Color color = damageOverlay.color;
 
-        // เฟดเข้า
         float t = 0f;
         while (t < overlayDuration / 2)
         {
@@ -95,7 +96,6 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        // เฟดออก
         t = 0f;
         while (t < overlayDuration / 2)
         {
@@ -117,13 +117,12 @@ public class GameManager : MonoBehaviour
     public void UseEnergy(float amount)
     {
         energy = Mathf.Clamp(energy - amount, 0, maxEnergy);
-        regenTimer = 0f; // รีเซ็ตเวลา regen ทุกครั้งที่ใช้พลัง
+        regenTimer = 0f;
     }
 
     private void HandleEnergySystem()
     {
         if (!energyRegenEnabled || maxEnergy <= 0f) return;
-
         if (isRunning)
         {
             regenTimer = 0f;
@@ -133,7 +132,6 @@ public class GameManager : MonoBehaviour
         if (energy < maxEnergy)
         {
             regenTimer += Time.deltaTime;
-
             if (regenTimer >= energyRegenDelay)
             {
                 float regenRate = isMoving ? walkRegenRate : idleRegenRate;
@@ -144,7 +142,7 @@ public class GameManager : MonoBehaviour
     }
 
     // ---------------------------- //
-    //        ระบบไฟฉาย
+    // Flashlight System
     // ---------------------------- //
     private void HandleFlashlight()
     {
@@ -177,8 +175,6 @@ public class GameManager : MonoBehaviour
         if (flashlight2D != null) flashlight2D.enabled = state;
     }
 
-
-
     public void RechargeFlashlight(float amount)
     {
         flashlightPower = Mathf.Clamp(flashlightPower + amount, 0f, maxFlashlightPower);
@@ -187,13 +183,11 @@ public class GameManager : MonoBehaviour
 
     public void OnToggleFlashlightButton()
     {
-        
         ToggleFlashlight(!flashlightOn);
     }
 
-
     // ---------------------------- //
-    //         ระบบ UI
+    // UI System
     // ---------------------------- //
     private void UpdateUI()
     {
@@ -204,20 +198,15 @@ public class GameManager : MonoBehaviour
             energySlider.value = energy;
 
         if (flashlightText != null)
-        {
-            flashlightText.text = $"Flashlight: {flashlightPower:F0} / {maxFlashlightPower}";
-        }
+            flashlightText.text = $"Flashlight: {flashlightPower:F0}/{maxFlashlightPower}";
     }
 
-    // ---------------------------- //
-    //       Scene Initialization
-    // ---------------------------- //
     public void InitScene(
-    Light2D sceneFlashlight = null,
-    TMP_Text sceneFlashlightText = null,
-    Slider sceneHealthSlider = null,
-    Slider sceneEnergySlider = null,
-    Image sceneDamageOverlay = null
+        Light2D sceneFlashlight = null,
+        TMP_Text sceneFlashlightText = null,
+        Slider sceneHealthSlider = null,
+        Slider sceneEnergySlider = null,
+        Image sceneDamageOverlay = null
     )
     {
         flashlight2D = sceneFlashlight;
@@ -228,9 +217,113 @@ public class GameManager : MonoBehaviour
     }
 
     // ---------------------------- //
-    //       เก็บของฮาฟฟู่
+    // Inventory + Hotbar System
     // ---------------------------- //
+    public void AddItem(ItemData newItem)
+    {
+        if (inventory.Count >= maxInventorySize)
+        {
+            Debug.Log("❌ Inventory full!");
+            return;
+        }
 
+        inventory.Add(newItem);
+        Debug.Log($"👜 Picked up: {newItem.itemName}");
+        RefreshHotbar();
+    }
 
+    void UseHotbarItem(int index)
+    {
+        if (index < inventory.Count)
+        {
+            ItemData item = inventory[index];
+            UseItem(item);
+        }
+    }
 
+    public void UseItem(ItemData item)
+    {
+        switch (item.type)
+        {
+            case ItemPickup.ItemType.Heal:
+                Heal(item.value);
+                break;
+            case ItemPickup.ItemType.Energy:
+                energy = Mathf.Clamp(energy + item.value, 0, maxEnergy);
+                break;
+            default:
+                Debug.Log("📦 Used: " + item.itemName);
+                break;
+        }
+
+        inventory.Remove(item);
+        RefreshHotbar();
+    }
+
+    public void RefreshHotbar()
+    {
+        if (slots == null || slotIcons == null)
+            return;
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (i < inventory.Count)
+            {
+                ItemData item = inventory[i];
+                slotIcons[i].sprite = item.icon;
+                slotIcons[i].color = Color.white;
+            }
+            else
+            {
+                slotIcons[i].sprite = null;
+                slotIcons[i].color = new Color(1, 1, 1, 0);
+            }
+        }
+    }
+
+    public void InitHotbarUI()
+    {
+        if (slots == null || slots.Length == 0)
+        {
+            Debug.LogWarning("⚠️ ยังไม่มี Slots กำหนดใน GameManager!");
+            return;
+        }
+
+        slotButtons = new Button[slots.Length];
+        slotIcons = new Image[slots.Length];
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i] == null)
+                continue;
+
+            slotButtons[i] = slots[i].GetComponent<Button>();
+            slotIcons[i] = slots[i].transform.Find("Icon").GetComponent<Image>();
+
+            int index = i;
+            slotButtons[i].onClick.RemoveAllListeners();
+            slotButtons[i].onClick.AddListener(() => UseHotbarItem(index));
+        }
+
+        RefreshHotbar();
+        Debug.Log("✅ Hotbar UI Initialized สำหรับ Scene ปัจจุบัน");
+    }
+}
+
+// ✅ โครงสร้างข้อมูลของไอเท็ม (ใช้แทน ScriptableObject)
+[System.Serializable]
+public class ItemData
+{
+    public string itemName;
+    public Sprite icon;
+    public ItemPickup.ItemType type;
+    public int value;
+
+    public ItemData(string name, Sprite ic, ItemPickup.ItemType t, int v)
+    {
+        itemName = name;
+        icon = ic;
+        type = t;
+        value = v;
+    }
 }

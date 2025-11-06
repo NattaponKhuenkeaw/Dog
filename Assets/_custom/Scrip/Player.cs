@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Player : MonoBehaviour
 {
-    
-
     public DoorClick doorClick;
     private PlayerInput playerInput;
     private CapsuleCollider2D col;
@@ -16,11 +15,17 @@ public class Player : MonoBehaviour
     public bool stopX = false;
 
     [Header("Hiding Settings")]
-    public bool isHidden = false;        // ผู้เล่นซ่อนอยู่หรือไม่
-    public float damageRate = 5f;        // เสียเลือดต่อรอบ
-    public float safeHideTime = 5f;      // ซ่อนได้ฟรีกี่วินาที
+    public bool isHidden = false;
+    public float damageRate = 5f;
+    public float safeHideTime = 5f;
     private Coroutine damageCoroutine;
+    public Image hideImage;
 
+    [Header("Warning Image")]
+    public Image warningImage;        // 🔹 รูปภาพเตือน
+    public float fadeInSpeed = 2f;
+    public float fadeOutSpeed = 5f;
+    
     [Header("Movement Settings")]
     public float walkSpeed = 2f;
     public float runSpeed = 5f;
@@ -32,9 +37,18 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        hideImage.gameObject.SetActive(false);
         playerInput = GetComponent<PlayerInput>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         col = GetComponent<CapsuleCollider2D>();
+
+        if (warningImage != null)
+        {
+            // ตั้งให้โปร่งใสตอนเริ่ม
+            Color color = warningImage.color;
+            color.a = 0f;
+            warningImage.color = color;
+        }
     }
 
     void Update()
@@ -64,25 +78,17 @@ public class Player : MonoBehaviour
 
         // 🔹 เข้าประตู
         if (doorClick != null && y > 0.8f && playerIsNearDoor)
-        {
             doorClick.OpenDoor();
-        }
 
         // 🔹 ซ่อนตัว
         if (playerIsNearHide && y > 0.8f && !isHidden)
-        {
             StartHiding();
-        }
         else if (isHidden && y < -0.8f)
-        {
             StopHiding();
-        }
 
         // 🔹 เคลื่อนที่
         if (isHidden || stopX)
-        {
             x = 0f;
-        }
 
         Vector3 move = new Vector3(x, 0, 0);
         transform.position += move * currentSpeed * Time.deltaTime;
@@ -92,9 +98,7 @@ public class Player : MonoBehaviour
 
         // 🔹 ใช้พลังงานตอนวิ่ง
         if (useEnergySystem && GameManager.instance.isRunning && currentEnergy > 0)
-        {
             GameManager.instance.UseEnergy(runEnergyCost * Time.deltaTime);
-        }
     }
 
     // -------------------------------
@@ -105,12 +109,13 @@ public class Player : MonoBehaviour
         isHidden = true;
         spriteRenderer.enabled = false;
         col.enabled = false;
+        hideImage.gameObject.SetActive(true);
 
         Debug.Log("เริ่มซ่อนตัว");
 
-        // เริ่มนับเวลา Coroutine
         if (damageCoroutine != null)
             StopCoroutine(damageCoroutine);
+
         damageCoroutine = StartCoroutine(HideDamageRoutine());
     }
 
@@ -119,11 +124,16 @@ public class Player : MonoBehaviour
         isHidden = false;
         spriteRenderer.enabled = true;
         col.enabled = true;
+        hideImage.gameObject.SetActive(false);
 
         Debug.Log("ออกจากการซ่อน");
 
         if (damageCoroutine != null)
             StopCoroutine(damageCoroutine);
+
+        // 🔹 เมื่อออกจากที่ซ่อนให้ภาพเตือนหายด้วย
+        if (warningImage != null)
+            StartCoroutine(FadeImage(0f));
     }
 
     // -------------------------------
@@ -131,21 +141,45 @@ public class Player : MonoBehaviour
     // -------------------------------
     IEnumerator HideDamageRoutine()
     {
-        yield return new WaitForSeconds(safeHideTime); // ซ่อนได้ฟรีก่อน 5 วิ
+        float halfTime = safeHideTime / 2f;
 
-        if (isHidden) // ถ้ายังซ่อนอยู่
+        // 🔹 รอครึ่งเวลาถึงจะแสดงภาพเตือน
+        yield return new WaitForSeconds(halfTime);
+
+        if (isHidden && warningImage != null)
+        {
+            Debug.Log("⚠️ เริ่มแสดงภาพเตือน");
+            StartCoroutine(FadeImage(1f)); // ค่อย ๆ เฟดขึ้น
+        }
+
+        // 🔹 รออีกครึ่งเวลาจนหมด
+        yield return new WaitForSeconds(halfTime);
+
+        if (isHidden)
         {
             GameManager.instance.TakeDamage((int)damageRate);
             Debug.Log($"⛔ ซ่อนนานเกินไป เสียเลือด {damageRate}");
 
-            
+            // ค่อย ๆ เฟดภาพเตือนหายไป
+            if (warningImage != null)
+                StartCoroutine(FadeImage(0f));
 
             StopHiding();
         }
     }
 
-    
+    IEnumerator FadeImage(float targetAlpha)
+    {
+        float speed = targetAlpha > 0 ? fadeInSpeed : fadeOutSpeed; // ถ้าเฟดเข้า ใช้ fadeInSpeed
 
+        Color color = warningImage.color;
+        while (!Mathf.Approximately(color.a, targetAlpha))
+        {
+            color.a = Mathf.MoveTowards(color.a, targetAlpha, Time.deltaTime * speed);
+            warningImage.color = color;
+            yield return null;
+        }
+    }
 
 
     // -------------------------------
@@ -156,12 +190,10 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Door"))
         {
             playerIsNearDoor = true;
-            Debug.Log("Player เข้ามาใกล้ประตูแล้ว");
         }
         else if (other.CompareTag("HideSpot"))
         {
             playerIsNearHide = true;
-            Debug.Log("Player เข้ามาใกล้จุดซ่อนแล้ว");
         }
     }
 
@@ -170,12 +202,10 @@ public class Player : MonoBehaviour
         if (other.CompareTag("Door"))
         {
             playerIsNearDoor = false;
-            Debug.Log("Player ออกจากประตูแล้ว");
         }
         else if (other.CompareTag("HideSpot"))
         {
             playerIsNearHide = false;
-            Debug.Log("Player ออกจากจุดซ่อนแล้ว");
         }
     }
 }
