@@ -899,7 +899,7 @@ MonoBehaviour:
     - prefab: {fileID: 2170897902466381338, guid: b82e1078c67d79748b0998cbf7592ead, type: 3}
       spawnChance: 0.508
     - prefab: {fileID: 2053349909453390601, guid: 8aac1d3c8054e64458b74abf7a529d51, type: 3}
-      spawnChance: 0.119
+      spawnChance: 1
     - prefab: {fileID: 1285277526810035415, guid: e501606164817404f8c58ed57c3a8a6d, type: 3}
       spawnChance: 0.119
     - prefab: {fileID: 4197971400004130445, guid: 1abdf082db6c4944190117e290a3b957, type: 3}
@@ -909,10 +909,8 @@ MonoBehaviour:
     items:
     - prefab: {fileID: 2170897902466381338, guid: b82e1078c67d79748b0998cbf7592ead, type: 3}
       spawnChance: 0.583
-    - prefab: {fileID: 4659870552510070826, guid: c34a7b2f9c299044eb326cec40b37e2e, type: 3}
-      spawnChance: 0.583
     - prefab: {fileID: 2053349909453390601, guid: 8aac1d3c8054e64458b74abf7a529d51, type: 3}
-      spawnChance: 0.099
+      spawnChance: 0.896
     - prefab: {fileID: 1285277526810035415, guid: e501606164817404f8c58ed57c3a8a6d, type: 3}
       spawnChance: 0.091
     - prefab: {fileID: 4197971400004130445, guid: 1abdf082db6c4944190117e290a3b957, type: 3}
@@ -2724,8 +2722,8 @@ MonoBehaviour:
   minIntensity: 0.5
   maxIntensity: 1.2
   flickerSpeed: 0.1
-  flashlightRange: 3.06
-  timeToDamageEnemy: 2
+  flashlightRange: 3.23
+  timeToDamageEnemy: 3
   enemyLayer:
     serializedVersion: 2
     m_Bits: 8

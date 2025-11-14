@@ -52,9 +52,20 @@ public class ItemPickup : MonoBehaviour
             return;
         }
 
+        // ❌ ถ้าเต็ม — ห้ามเก็บ
+        if (GameManager.instance.inventory.Count >= GameManager.instance.maxInventorySize)
+        {
+            Debug.Log("⚠️ เก็บไม่ได้! กระเป๋าเต็ม 3 ช่องแล้ว");
+            return;
+        }
+
+        // ✅ ยังไม่เต็ม — เก็บได้
         ItemData newItem = new ItemData(itemName, icon, type, value);
+
         GameManager.instance.AddItem(newItem);
         Debug.Log($"✅ เก็บไอเท็ม: {itemName}");
-        Destroy(gameObject);
+
+        Destroy(gameObject);  // ทำลายไอเท็มหลังเก็บ
     }
+
 }
