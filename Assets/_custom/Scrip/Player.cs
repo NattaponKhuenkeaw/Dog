@@ -44,7 +44,7 @@ public class Player : MonoBehaviour
 
         if (warningImage != null)
         {
-            // ตั้งให้โปร่งใสตอนเริ่ม
+            
             Color color = warningImage.color;
             color.a = 0f;
             warningImage.color = color;
@@ -128,13 +128,22 @@ public class Player : MonoBehaviour
 
         Debug.Log("ออกจากการซ่อน");
 
+        // หยุดดาเมจ
         if (damageCoroutine != null)
             StopCoroutine(damageCoroutine);
 
-        // 🔹 เมื่อออกจากที่ซ่อนให้ภาพเตือนหายด้วย
+        // ❗ หยุดเฟดทั้งหมดทันที
+        StopAllCoroutines();
+
+        // ❗ รีเซ็ตเตือนทันที
         if (warningImage != null)
-            StartCoroutine(FadeImage(0f));
+        {
+            Color c = warningImage.color;
+            c.a = 0f;
+            warningImage.color = c;
+        }
     }
+
 
     // -------------------------------
     // 🔸 Coroutine ทำดาเมจหลังซ่อนเกินเวลา

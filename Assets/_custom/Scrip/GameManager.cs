@@ -16,10 +16,12 @@ public class GameManager : MonoBehaviour
     private Coroutine overlayCoroutine;
 
     [Header("Player Stats")]
+    public bool isDead = false;
     public int health = 100;
     public float energy = 100f;
     public int maxHealth = 100;
     public float maxEnergy = 100f;
+    public GameObject deathScreen;
 
     [Header("Energy Regeneration")]
     public bool energyRegenEnabled = true;
@@ -69,6 +71,11 @@ public class GameManager : MonoBehaviour
         HandleEnergySystem();
         HandleFlashlight();
         UpdateUI();
+        if (health <= 0 && isDead==false)
+        {
+            deathScreen.SetActive(true);
+            isDead = true;
+        }
     }
 
     // ---------------------------- //
