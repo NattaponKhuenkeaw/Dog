@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    
+    public Vector3 lastPlayerPosition;
+
 
 
 
@@ -60,6 +62,18 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance == null)
+        {
+          
+            instance = this;
+
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            
+            Destroy(gameObject);
+        }
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
@@ -71,21 +85,17 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (health <= 0 && isDead == false)
-        {
-            isDead = true;
-
-            
-
-            deathScreen.SetActive(true);
-        }
+        
         HandleEnergySystem();
         HandleFlashlight();
         UpdateUI();
         if (health <= 0 && isDead==false)
         {
+            energy = maxEnergy;
+            health = maxHealth;
             deathScreen.SetActive(true);
             isDead = true;
+            
         }
     }
 
@@ -329,6 +339,7 @@ public class GameManager : MonoBehaviour
         RefreshHotbar();
         Debug.Log("✅ Hotbar UI Initialized สำหรับ Scene ปัจจุบัน");
     }
+   
 }
 
 // ✅ โครงสร้างข้อมูลของไอเท็ม (ใช้แทน ScriptableObject)

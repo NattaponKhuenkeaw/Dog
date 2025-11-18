@@ -248,7 +248,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 26135313}
         m_TargetAssemblyTypeName: DoorClick, Assembly-CSharp
-        m_MethodName: changScene
+        m_MethodName: OpenDoor
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

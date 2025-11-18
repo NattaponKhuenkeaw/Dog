@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Purchasing;
 using UnityEngine.UI;
-using System.Collections;
 
 public class Player : MonoBehaviour
 {
@@ -89,6 +90,7 @@ public class Player : MonoBehaviour
         // 🔹 เข้าประตู
         if (playerIsNearDoor && y > 0.8f)
         {
+            GameManager.instance.lastPlayerPosition = this.transform.position;
             doorClick.OpenDoor();
         }
 

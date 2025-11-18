@@ -21,10 +21,18 @@ public class SceneInitializer : MonoBehaviour
 
     void Start()
     {
-        
-        
-       
-        
+
+
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null && GameManager.instance.lastPlayerPosition != Vector3.zero)
+        {
+            // 3. ย้าย Player ไปยังตำแหน่งที่บันทึกไว้
+            player.transform.position = GameManager.instance.lastPlayerPosition;
+
+            // 4. (สำคัญมาก) ล้างค่าที่จำไว้ ไม่งั้นทุกครั้งที่โหลด Scene นี้ Player จะวาร์ปกลับมาที่นี่ตลอด
+            
+        }
 
         GameManager.instance.deathScreen = deathScreen;
 

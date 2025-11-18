@@ -1660,79 +1660,6 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
---- !u!1 &292767169
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 292767171}
-  - component: {fileID: 292767170}
-  m_Layer: 0
-  m_Name: Gamemenager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &292767170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 292767169}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e81843f457ba1d943bb78286a2c84b49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  damageOverlay: {fileID: 929291365}
-  overlayDuration: 0.2
-  overlayMaxAlpha: 0.2
-  isDead: 0
-  health: 100
-  energy: 100
-  maxHealth: 100
-  maxEnergy: 100
-  deathScreen: {fileID: 654982760}
-  energyRegenEnabled: 1
-  walkRegenRate: 2
-  idleRegenRate: 5
-  energyRegenDelay: 1
-  flashlightOn: 0
-  flashlightPower: 100
-  maxFlashlightPower: 100
-  flashlightDrainRate: 1
-  flashlight2D: {fileID: 0}
-  flashlightText: {fileID: 526517959}
-  healthSlider: {fileID: 1456863606}
-  energySlider: {fileID: 1456863605}
-  isMoving: 0
-  isRunning: 0
-  inventory: []
-  maxInventorySize: 3
-  slots:
-  - {fileID: 700872293}
-  - {fileID: 1215810070}
-  - {fileID: 1643733872}
---- !u!4 &292767171
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 292767169}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 342.77298, y: 252.6478, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &360043505
 GameObject:
   m_ObjectHideFlags: 0
@@ -17431,7 +17358,7 @@ RectTransform:
   m_GameObject: {fileID: 1369935484}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.4861, y: 1.4861, z: 1.4861}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1601941146}
@@ -17461,7 +17388,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 49874143576130085, guid: b3d39c49a20c2f64ca99dc88260a562a, type: 3}
+  m_Sprite: {fileID: -638695147762086782, guid: 8410873c63dc8bb4987583a782a74935, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -50494,7 +50421,6 @@ SceneRoots:
   - {fileID: 959153488}
   - {fileID: 723873100}
   - {fileID: 1601941146}
-  - {fileID: 292767171}
   - {fileID: 2075489315}
   - {fileID: 135636007}
   - {fileID: 1502599079}
