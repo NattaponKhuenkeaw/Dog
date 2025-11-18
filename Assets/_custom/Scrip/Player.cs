@@ -35,8 +35,18 @@ public class Player : MonoBehaviour
     public bool useEnergySystem = true;
     public float runEnergyCost = 3f;
 
+    [Header("Jumpscare System")]
+    public Image jumpscareImage;
+    public float jumpscareTime = 0.3f;
+    //public AudioSource scareSound;
+
+
     void Start()
     {
+        
+        
+        
+
         hideImage.gameObject.SetActive(false);
         playerInput = GetComponent<PlayerInput>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -77,8 +87,10 @@ public class Player : MonoBehaviour
         }
 
         // 🔹 เข้าประตู
-        if (doorClick != null && y > 0.8f && playerIsNearDoor)
+        if (playerIsNearDoor && y > 0.8f)
+        {
             doorClick.OpenDoor();
+        }
 
         // 🔹 ซ่อนตัว
         if (playerIsNearHide && y > 0.8f && !isHidden)
@@ -204,6 +216,19 @@ public class Player : MonoBehaviour
         {
             playerIsNearHide = true;
         }
+        else if (other.CompareTag("Stalker"))  
+        {
+            if (!wasHitByStalker)
+            {
+                wasHitByStalker = true;
+
+                // ทำดาเมจ
+                GameManager.instance.TakeDamage(25);
+
+                // แสดง jumpscare
+                StartCoroutine(DoJumpscare());
+            }
+        }
     }
 
     public void OnTriggerExit2D(Collider2D other)
@@ -216,5 +241,29 @@ public class Player : MonoBehaviour
         {
             playerIsNearHide = false;
         }
+        
     }
+
+
+
+
+    private bool wasHitByStalker = false;
+
+  
+
+    IEnumerator DoJumpscare()
+    {
+        if (jumpscareImage != null)
+            jumpscareImage.gameObject.SetActive(true);
+
+       // if (scareSound != null)
+        //    scareSound.Play();
+
+        yield return new WaitForSeconds(jumpscareTime);
+
+        if (jumpscareImage != null)
+            jumpscareImage.gameObject.SetActive(false);
+    }
+
+
 }

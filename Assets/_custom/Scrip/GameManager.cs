@@ -8,6 +8,9 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    
+
+
 
     [Header("Damage Overlay")]
     public Image damageOverlay;
@@ -68,6 +71,14 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (health <= 0 && isDead == false)
+        {
+            isDead = true;
+
+            
+
+            deathScreen.SetActive(true);
+        }
         HandleEnergySystem();
         HandleFlashlight();
         UpdateUI();
@@ -121,6 +132,7 @@ public class GameManager : MonoBehaviour
         health = Mathf.Clamp(health + amount, 0, maxHealth);
     }
 
+    
     public void UseEnergy(float amount)
     {
         energy = Mathf.Clamp(energy - amount, 0, maxEnergy);
@@ -213,7 +225,8 @@ public class GameManager : MonoBehaviour
         TMP_Text sceneFlashlightText = null,
         Slider sceneHealthSlider = null,
         Slider sceneEnergySlider = null,
-        Image sceneDamageOverlay = null
+        Image sceneDamageOverlay = null,
+        GameObject sceneDeathScreen = null
     )
     {
         flashlight2D = sceneFlashlight;
@@ -221,6 +234,7 @@ public class GameManager : MonoBehaviour
         healthSlider = sceneHealthSlider;
         energySlider = sceneEnergySlider;
         damageOverlay = sceneDamageOverlay;
+        deathScreen = sceneDeathScreen;
     }
 
     // ---------------------------- //
@@ -258,8 +272,8 @@ public class GameManager : MonoBehaviour
             case ItemPickup.ItemType.Energy:
                 energy = Mathf.Clamp(energy + item.value, 0, maxEnergy);
                 break;
-            default:
-                Debug.Log("📦 Used: " + item.itemName);
+            case ItemPickup.ItemType.Baterry:
+                flashlightPower += (item.value);
                 break;
         }
 

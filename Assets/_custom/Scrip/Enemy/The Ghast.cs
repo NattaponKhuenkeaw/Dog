@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class TheGhast : MonoBehaviour
 {
@@ -9,6 +10,12 @@ public class TheGhast : MonoBehaviour
     [Header("Damage")]
     public int damageOnMove = 20;       // ❗ โดนดาเมจครั้งเดียว
     public float detectionRange = 6f;
+
+    [Header("Light")]
+    public Light2D redLight; // ใส่ Light component ของ Unity ใน Inspector
+    public Color redLightColor = Color.red;
+    public float redLightIntensity = 2f;
+
 
     private Transform player;
     private bool isRedLight = false;
@@ -23,6 +30,11 @@ public class TheGhast : MonoBehaviour
             player = p.transform;
 
         timer = greenDuration;
+        if (redLight != null)
+        {
+            redLight.enabled = false; // เริ่มต้นปิดไฟ
+        }
+
     }
 
     void Update()
@@ -46,6 +58,13 @@ public class TheGhast : MonoBehaviour
                 hasHitThisRed = false; // รีเซ็ตตีใหม่รอบนี้ได้
                 timer = redDuration;
                 Debug.Log("🔴 RED LIGHT — ห้ามขยับ!");
+
+                if (redLight != null)
+                {
+                    redLight.enabled = true;
+                    redLight.color = redLightColor;
+                    redLight.intensity = redLightIntensity;
+                }
             }
         }
         else
@@ -56,11 +75,13 @@ public class TheGhast : MonoBehaviour
                 isRedLight = false;
                 timer = greenDuration;
                 Debug.Log("🟢 GREEN LIGHT — เดินได้!");
+
+                if (redLight != null)
+                    redLight.enabled = false;
             }
         }
     }
-
-    void DetectMovementOnce()
+        void DetectMovementOnce()
     {
         if (!isRedLight) return;
 

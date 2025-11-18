@@ -387,7 +387,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8723533699801431923, guid: 05429485200ce7844a814bd941664f91, type: 3}
+  m_Sprite: {fileID: 6909183929802566604, guid: 74d8086dbc974d0449cf66cd065732e9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1453,7 +1453,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 216151786}
         m_TargetAssemblyTypeName: DoorClick, Assembly-CSharp
-        m_MethodName: OpenDoor
+        m_MethodName: changScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

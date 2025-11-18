@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering.Universal;
+using System.Collections;
 
 public class SceneInitializer : MonoBehaviour
 {
@@ -12,12 +13,21 @@ public class SceneInitializer : MonoBehaviour
     public Slider energySlider;
     public Button flashlightButton;
     public Image damageOverlay;
+    public GameObject deathScreen;
+
 
     [Header("Hotbar UI (3 ช่อง)")]
     public GameObject[] hotbarSlots;   // ใส่ Slot1, Slot2, Slot3 ของ Scene นี้
 
     void Start()
     {
+        
+        
+       
+        
+
+        GameManager.instance.deathScreen = deathScreen;
+
         // ------------------------------
         // ✅ 1. อัปเดต reference ให้ GameManager
         // ------------------------------
@@ -28,7 +38,8 @@ public class SceneInitializer : MonoBehaviour
                 flashlightText,
                 healthSlider,
                 energySlider,
-                damageOverlay
+                damageOverlay,
+                deathScreen
             );
 
             // ------------------------------
@@ -43,6 +54,8 @@ public class SceneInitializer : MonoBehaviour
             {
                 Debug.LogWarning("⚠️ ยังไม่ได้กำหนด HotbarSlots ใน SceneInitializer!");
             }
+            
+           
         }
         else
         {
@@ -63,4 +76,6 @@ public class SceneInitializer : MonoBehaviour
             });
         }
     }
+        
+
 }

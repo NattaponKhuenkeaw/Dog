@@ -10,7 +10,7 @@ public class ItemPickup : MonoBehaviour
     public ItemType type;
     public int value;
 
-    public enum ItemType { Heal, Energy, Other }
+    public enum ItemType { Heal, Energy, Baterry }
 
     private Camera mainCam;
 
