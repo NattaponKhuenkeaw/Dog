@@ -10,6 +10,9 @@ public class SpawnerSt : MonoBehaviour
     public float blinkDuration = 0.2f;
     public int blinkCount = 3;
 
+    [Header("Sound Effect")]
+    public AudioSource spawnSound;   // ★ เพิ่มตัวแปรเสียง
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -19,45 +22,36 @@ public class SpawnerSt : MonoBehaviour
             Vector3 spawnPos = player.position + new Vector3(dir * distanceBehind, 0, 0);
 
             Instantiate(objectToSpawn, spawnPos, Quaternion.identity);
-            Debug.Log("Spawn behind player at: " + spawnPos);
 
-            // --- ส่วนที่แก้ไข ---
+            // 🔊 เล่นเสียงตรงนี้
+            if (spawnSound != null)
+                spawnSound.Play();
 
-            // 1. สั่งกระพริบไฟดวงเดิมที่มีอยู่ใน Array
+            // กระพริบไฟ
             foreach (var light in lightsToBlink)
             {
-                if (light != null) // ตรวจสอบว่า light ไม่ได้เป็นค่าว่าง
-                {
+                if (light != null)
                     StartCoroutine(BlinkTempLight(light));
-                }
             }
 
-            // 2. ปิด Collider แทนการทำลาย Object 
-            //    เพื่อไม่ให้ Trigger ทำงานซ้ำ แต่ยังรัน Coroutine ต่อได้
+            // ปิด Collider เพื่อไม่ให้ทำงานซ้ำ
             GetComponent<Collider2D>().enabled = false;
-
-            // Destroy(gameObject); // <--- ปัญหาอยู่ที่บรรทัดนี้ครับ
         }
     }
 
     private IEnumerator BlinkTempLight(Light2D tempLight)
     {
-        Debug.Log("Blink start: " + tempLight.name);
-
         float originalIntensity = tempLight.intensity;
 
         for (int i = 0; i < blinkCount; i++)
         {
             tempLight.intensity = 0;
-            Debug.Log("OFF");
             yield return new WaitForSeconds(blinkDuration);
 
             tempLight.intensity = originalIntensity;
-            Debug.Log("ON");
             yield return new WaitForSeconds(blinkDuration);
         }
 
         tempLight.intensity = originalIntensity;
-        Debug.Log("END");
     }
 }

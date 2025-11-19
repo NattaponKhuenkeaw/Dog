@@ -11,6 +11,17 @@ public class Player : MonoBehaviour
     public Image warningImage;
     public Image jumpscareImage;
 
+    [Header("Footstep Settings")]
+    public AudioSource footstepSource;    // ใส่ AudioSource ทีเดียวใช้กับ PlayOneShot
+    public AudioClip walkClip;            // เสียงเดิน
+    public AudioClip runClip;             // เสียงวิ่ง
+    public float walkInterval = 0.45f;    // ระยะห่างของเสียงตอนเดิน
+    public float runInterval = 0.25f;     // ระยะห่างตอนวิ่ง
+    private float footstepTimer = 0f;
+
+
+
+
     [Header("Door System")]
     public DoorClick doorClick;
 
@@ -140,6 +151,55 @@ public class Player : MonoBehaviour
         // ---------------- Energy Use ----------------
         if (useEnergySystem && GameManager.instance.isRunning && currentEnergy > 0)
             GameManager.instance.UseEnergy(runEnergyCost * Time.deltaTime);
+
+        // ---------------- Footstep Sound ----------------
+        // อ่าน input เดิน
+        Vector2 moveInput = playerInput.actions["Move"].ReadValue<Vector2>();
+        bool isMoving = Mathf.Abs(moveInput.x) > 0.1f;
+        bool isRunning = GameManager.instance.isRunning;
+
+        // --------- FOOTSTEP SYSTEM ----------
+        if (isMoving)
+        {
+            float interval = isRunning ? runInterval : walkInterval;
+
+            // เช็ค clip ที่ควรเล่นตอนนี้
+            AudioClip targetClip = isRunning ? runClip : walkClip;
+
+            // ถ้า clip ไม่ตรงกับที่ควรเล่น → เปลี่ยน clip และเริ่มเล่นใหม่
+            if (footstepSource.clip != targetClip)
+            {
+                footstepSource.clip = targetClip;
+                footstepSource.Stop();
+                footstepTimer = 0f;  // รีเซ็ตเพื่อให้เสียงเริ่มใหม่พอดีจังหวะ
+            }
+
+            footstepTimer -= Time.deltaTime;
+
+            // ถึงเวลาเล่นเสียงใหม่
+            if (footstepTimer <= 0f)
+            {
+                // random pitch ให้เสียงไม่ซ้ำ
+                footstepSource.pitch = Random.Range(0.95f, 1.05f);
+
+                // เล่นเสียงทีละครั้ง (ไม่ซ้อน)
+                footstepSource.Play();
+
+                footstepTimer = interval;
+            }
+        }
+        else
+        {
+            // ถ้าไม่เดิน ให้หยุดเสียงทันที
+            if (footstepSource.isPlaying)
+                footstepSource.Stop();
+
+            footstepTimer = 0f;
+        }
+
+
+
+
     }
 
 
@@ -280,4 +340,9 @@ public class Player : MonoBehaviour
         if (jumpscareImage != null)
             jumpscareImage.gameObject.SetActive(false);
     }
+
+
+
+   
+
 }
