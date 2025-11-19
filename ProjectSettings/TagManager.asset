@@ -9,6 +9,8 @@ TagManager:
   - HideSpot
   - 'Jumpscare '
   - Stalker
+  - stairs
+  - Win
   layers:
   - Default
   - TransparentFX

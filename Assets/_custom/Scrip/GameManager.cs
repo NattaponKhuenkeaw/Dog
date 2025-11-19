@@ -9,24 +9,24 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+
+    [Header("Player State")]
     public Vector3 lastPlayerPosition;
+    public bool isDead = false;
+    public int health = 100;
+    public int maxHealth = 100;
+    public float energy = 100f;
+    public float maxEnergy = 100f;
+    public GameObject deathScreen;
 
-
-
+    [Header("Door Lock System")]
+    public HashSet<string> lockedDoors = new HashSet<string>();
 
     [Header("Damage Overlay")]
     public Image damageOverlay;
     public float overlayDuration = 0.5f;
     public float overlayMaxAlpha = 0.5f;
     private Coroutine overlayCoroutine;
-
-    [Header("Player Stats")]
-    public bool isDead = false;
-    public int health = 100;
-    public float energy = 100f;
-    public int maxHealth = 100;
-    public float maxEnergy = 100f;
-    public GameObject deathScreen;
 
     [Header("Energy Regeneration")]
     public bool energyRegenEnabled = true;
@@ -55,66 +55,72 @@ public class GameManager : MonoBehaviour
     public List<ItemData> inventory = new List<ItemData>();
     public int maxInventorySize = 3;
 
-    [Header("Hotbar UI (3 ช่อง)")]
+    [Header("Hotbar UI (3 Slots)")]
     public GameObject[] slots = new GameObject[3];
     private Button[] slotButtons;
     private Image[] slotIcons;
 
+
+    // ------------------------------------------------------------
+    // Awake (Singleton)
+    // ------------------------------------------------------------
     private void Awake()
     {
-        if (instance == null)
-        {
-          
-            instance = this;
-
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            
-            Destroy(gameObject);
-        }
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
         instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
+
+    // ------------------------------------------------------------
+    // Update Loop
+    // ------------------------------------------------------------
     private void Update()
     {
-        
         HandleEnergySystem();
         HandleFlashlight();
         UpdateUI();
-        if (health <= 0 && isDead==false)
+
+        if (health <= 0 && !isDead)
         {
             energy = maxEnergy;
             health = maxHealth;
-            deathScreen.SetActive(true);
+
+            inventory.Clear();
+            RefreshHotbar();
+
+            deathScreen?.SetActive(true);
+
             isDead = true;
-            
         }
     }
 
-    // ---------------------------- //
-    // HP / Energy System
-    // ---------------------------- //
+
+    // ------------------------------------------------------------
+    // HP & Damage System
+    // ------------------------------------------------------------
     public void TakeDamage(int damage)
     {
         health = Mathf.Clamp(health - damage, 0, maxHealth);
+
         if (overlayCoroutine != null)
             StopCoroutine(overlayCoroutine);
+
         overlayCoroutine = StartCoroutine(FlashDamageOverlay());
     }
 
     private IEnumerator FlashDamageOverlay()
     {
         if (damageOverlay == null) yield break;
+
         Color color = damageOverlay.color;
 
+        // Fade In
         float t = 0f;
         while (t < overlayDuration / 2)
         {
@@ -124,6 +130,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
+        // Fade Out
         t = 0f;
         while (t < overlayDuration / 2)
         {
@@ -142,13 +149,16 @@ public class GameManager : MonoBehaviour
         health = Mathf.Clamp(health + amount, 0, maxHealth);
     }
 
-    
     public void UseEnergy(float amount)
     {
         energy = Mathf.Clamp(energy - amount, 0, maxEnergy);
         regenTimer = 0f;
     }
 
+
+    // ------------------------------------------------------------
+    // Energy Regeneration
+    // ------------------------------------------------------------
     private void HandleEnergySystem()
     {
         if (!energyRegenEnabled || maxEnergy <= 0f) return;
@@ -161,34 +171,35 @@ public class GameManager : MonoBehaviour
         if (energy < maxEnergy)
         {
             regenTimer += Time.deltaTime;
+
             if (regenTimer >= energyRegenDelay)
             {
                 float regenRate = isMoving ? walkRegenRate : idleRegenRate;
-                energy += regenRate * Time.deltaTime;
-                energy = Mathf.Clamp(energy, 0, maxEnergy);
+                energy = Mathf.Clamp(energy + regenRate * Time.deltaTime, 0, maxEnergy);
             }
         }
     }
 
-    // ---------------------------- //
+
+    // ------------------------------------------------------------
     // Flashlight System
-    // ---------------------------- //
+    // ------------------------------------------------------------
     private void HandleFlashlight()
     {
-        if (flashlightOn && flashlight2D != null && flashlightPower > 0f)
+        if (flashlightOn && flashlightPower > 0f)
         {
             flashlightPower -= flashlightDrainRate * Time.deltaTime;
-            flashlightPower = Mathf.Clamp(flashlightPower, 0f, maxFlashlightPower);
-
-            flashlight2D.enabled = flashlightPower > 0;
-
-            if (flashlightPower <= 0f)
-                ToggleFlashlight(false);
+            flashlightPower = Mathf.Clamp(flashlightPower, 0, maxFlashlightPower);
         }
-        else if (flashlight2D != null)
-        {
-            flashlight2D.enabled = false;
-        }
+
+        // Disable automatically when empty
+        if (flashlight2D != null)
+            flashlight2D.enabled = flashlightOn && flashlightPower > 0;
+    }
+
+    public void OnToggleFlashlightButton()
+    {
+        ToggleFlashlight(!flashlightOn);
     }
 
     public void ToggleFlashlight(bool state)
@@ -200,24 +211,20 @@ public class GameManager : MonoBehaviour
             Debug.Log("Flashlight battery empty!");
             return;
         }
+
         flashlightOn = state;
         if (flashlight2D != null) flashlight2D.enabled = state;
     }
 
     public void RechargeFlashlight(float amount)
     {
-        flashlightPower = Mathf.Clamp(flashlightPower + amount, 0f, maxFlashlightPower);
-        Debug.Log("Flashlight recharged: " + flashlightPower);
+        flashlightPower = Mathf.Clamp(flashlightPower + amount, 0, maxFlashlightPower);
     }
 
-    public void OnToggleFlashlightButton()
-    {
-        ToggleFlashlight(!flashlightOn);
-    }
 
-    // ---------------------------- //
-    // UI System
-    // ---------------------------- //
+    // ------------------------------------------------------------
+    // UI Update
+    // ------------------------------------------------------------
     private void UpdateUI()
     {
         if (healthSlider != null)
@@ -231,13 +238,12 @@ public class GameManager : MonoBehaviour
     }
 
     public void InitScene(
-        Light2D sceneFlashlight = null,
-        TMP_Text sceneFlashlightText = null,
-        Slider sceneHealthSlider = null,
-        Slider sceneEnergySlider = null,
-        Image sceneDamageOverlay = null,
-        GameObject sceneDeathScreen = null
-    )
+        Light2D sceneFlashlight,
+        TMP_Text sceneFlashlightText,
+        Slider sceneHealthSlider,
+        Slider sceneEnergySlider,
+        Image sceneDamageOverlay,
+        GameObject sceneDeathScreen)
     {
         flashlight2D = sceneFlashlight;
         flashlightText = sceneFlashlightText;
@@ -247,76 +253,40 @@ public class GameManager : MonoBehaviour
         deathScreen = sceneDeathScreen;
     }
 
-    // ---------------------------- //
-    // Inventory + Hotbar System
-    // ---------------------------- //
+
+    // ------------------------------------------------------------
+    // Inventory & Hotbar
+    // ------------------------------------------------------------
     public void AddItem(ItemData newItem)
     {
         if (inventory.Count >= maxInventorySize)
         {
-            Debug.Log("❌ Inventory full!");
+            Debug.Log("Inventory full!");
             return;
         }
 
         inventory.Add(newItem);
-        Debug.Log($"👜 Picked up: {newItem.itemName}");
         RefreshHotbar();
-    }
-
-    void UseHotbarItem(int index)
-    {
-        if (index < inventory.Count)
-        {
-            ItemData item = inventory[index];
-            UseItem(item);
-        }
     }
 
     public void UseItem(ItemData item)
     {
         switch (item.type)
         {
-            case ItemPickup.ItemType.Heal:
-                Heal(item.value);
-                break;
-            case ItemPickup.ItemType.Energy:
-                energy = Mathf.Clamp(energy + item.value, 0, maxEnergy);
-                break;
-            case ItemPickup.ItemType.Baterry:
-                flashlightPower += (item.value);
-                break;
+            case ItemPickup.ItemType.Heal: Heal(item.value); break;
+            case ItemPickup.ItemType.Energy: energy = Mathf.Clamp(energy + item.value, 0, maxEnergy); break;
+            case ItemPickup.ItemType.Baterry: flashlightPower = Mathf.Clamp(flashlightPower + item.value, 0, maxFlashlightPower); break;
         }
 
         inventory.Remove(item);
         RefreshHotbar();
     }
 
-    public void RefreshHotbar()
-    {
-        if (slots == null || slotIcons == null)
-            return;
-
-        for (int i = 0; i < slots.Length; i++)
-        {
-            if (i < inventory.Count)
-            {
-                ItemData item = inventory[i];
-                slotIcons[i].sprite = item.icon;
-                slotIcons[i].color = Color.white;
-            }
-            else
-            {
-                slotIcons[i].sprite = null;
-                slotIcons[i].color = new Color(1, 1, 1, 0);
-            }
-        }
-    }
-
     public void InitHotbarUI()
     {
         if (slots == null || slots.Length == 0)
         {
-            Debug.LogWarning("⚠️ ยังไม่มี Slots กำหนดใน GameManager!");
+            Debug.LogWarning("No slots assigned!");
             return;
         }
 
@@ -325,8 +295,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < slots.Length; i++)
         {
-            if (slots[i] == null)
-                continue;
+            if (slots[i] == null) continue;
 
             slotButtons[i] = slots[i].GetComponent<Button>();
             slotIcons[i] = slots[i].transform.Find("Icon").GetComponent<Image>();
@@ -337,12 +306,52 @@ public class GameManager : MonoBehaviour
         }
 
         RefreshHotbar();
-        Debug.Log("✅ Hotbar UI Initialized สำหรับ Scene ปัจจุบัน");
     }
-   
+
+    private void UseHotbarItem(int index)
+    {
+        if (index < inventory.Count)
+            UseItem(inventory[index]);
+    }
+
+    public void RefreshHotbar()
+    {
+        if (slotIcons == null) return;
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (i < inventory.Count)
+            {
+                slotIcons[i].sprite = inventory[i].icon;
+                slotIcons[i].color = Color.white;
+            }
+            else
+            {
+                slotIcons[i].sprite = null;
+                slotIcons[i].color = new Color(1, 1, 1, 0);
+            }
+        }
+    }
+
+
+    // ------------------------------------------------------------
+    // Door Lock System
+    // ------------------------------------------------------------
+    public void LockDoor(string doorID)
+    {
+        lockedDoors.Add(doorID);
+    }
+
+    public bool IsDoorLocked(string doorID)
+    {
+        return lockedDoors.Contains(doorID);
+    }
 }
 
-// ✅ โครงสร้างข้อมูลของไอเท็ม (ใช้แทน ScriptableObject)
+
+// ------------------------------------------------------------
+// Item Data Structure
+// ------------------------------------------------------------
 [System.Serializable]
 public class ItemData
 {

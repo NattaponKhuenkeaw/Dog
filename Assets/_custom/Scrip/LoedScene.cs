@@ -7,18 +7,14 @@ public class DoorClick : MonoBehaviour
 {
     public string sceneName;
     public static bool roomOpened = false; // กันโหลดซ้ำ
-
-
-
-
-
-
-   
-
+    public Door door;
     public void OpenDoor()
     {
-       
+        // ล็อคประตูเมื่อออกมาในอนาคต
+        
+
         SceneManager.LoadScene(sceneName);
+        GameManager.instance.LockDoor(door.doorID);
     }
 
 
