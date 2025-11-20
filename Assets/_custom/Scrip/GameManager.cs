@@ -9,6 +9,10 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip damageSound;
+    public AudioClip flashlightSound;
 
     [Header("Player State")]
     public Vector3 lastPlayerPosition;
@@ -108,6 +112,10 @@ public class GameManager : MonoBehaviour
     {
         health = Mathf.Clamp(health - damage, 0, maxHealth);
 
+        // เล่นเสียงเมื่อได้รับความเสียหาย
+        if (audioSource != null && damageSound != null)
+            audioSource.PlayOneShot(damageSound);
+
         if (overlayCoroutine != null)
             StopCoroutine(overlayCoroutine);
 
@@ -199,6 +207,7 @@ public class GameManager : MonoBehaviour
 
     public void OnToggleFlashlightButton()
     {
+        audioSource.PlayOneShot(flashlightSound);
         ToggleFlashlight(!flashlightOn);
     }
 

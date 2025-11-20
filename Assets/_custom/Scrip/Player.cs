@@ -12,15 +12,12 @@ public class Player : MonoBehaviour
     public Image jumpscareImage;
 
     [Header("Footstep Settings")]
-    public AudioSource footstepSource;    // ใส่ AudioSource ทีเดียวใช้กับ PlayOneShot
-    public AudioClip walkClip;            // เสียงเดิน
-    public AudioClip runClip;             // เสียงวิ่ง
-    public float walkInterval = 0.45f;    // ระยะห่างของเสียงตอนเดิน
-    public float runInterval = 0.25f;     // ระยะห่างตอนวิ่ง
+    public AudioSource footstepSource;
+    public AudioClip walkClip;
+    public AudioClip runClip;
+    public float walkInterval = 0.45f;
+    public float runInterval = 0.25f;
     private float footstepTimer = 0f;
-
-
-
 
     [Header("Door System")]
     public DoorClick doorClick;
@@ -37,6 +34,10 @@ public class Player : MonoBehaviour
     public float damageRate = 5f;
     public float safeHideTime = 5f;
     private Coroutine damageCoroutine;
+    public AudioSource hidingSource;
+    public AudioClip hidingClip;
+    public AudioClip openDoor;
+
 
     [Header("Warning Fade Settings")]
     public float fadeInSpeed = 2f;
@@ -59,10 +60,15 @@ public class Player : MonoBehaviour
     [Header("Jumpscare Settings")]
     public float jumpscareTime = 0.3f;
     private bool wasHitByStalker = false;
+    public AudioSource jumpscareAudio;
+    public AudioClip jumpscare;
 
     private PlayerInput playerInput;
     private CapsuleCollider2D col;
     private SpriteRenderer spriteRenderer;
+
+    // [ADD] เพิ่มตัวแปร Animator
+    private Animator animator;
 
 
     // ------------------------------------------------------------
@@ -73,6 +79,9 @@ public class Player : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         col = GetComponent<CapsuleCollider2D>();
+
+        // [ADD] ดึง Component Animator มาเก็บไว้
+        animator = GetComponent<Animator>();
 
         if (hideImage != null)
             hideImage.gameObject.SetActive(false);
@@ -115,6 +124,30 @@ public class Player : MonoBehaviour
             GameManager.instance.isRunning = false;
         }
 
+        // [ADD] -------------- Animation Logic ---------------
+        if (animator != null)
+        {
+            // สั่ง Animator ให้เล่น/หยุด ตามที่มีการเคลื่อนที่ (inputMagnitude > 0)
+            bool isMoving = inputMagnitude > 0.01f;
+            animator.SetBool("IsMoving", isMoving);
+
+            // (Optional) ถ้าอยากแยกท่าวิ่งด้วย ให้เพิ่ม Parameter "IsRunning" ใน Unity และ Uncomment บรรทัดนี้
+            // animator.SetBool("IsRunning", GameManager.instance.isRunning);
+        }
+
+        // [ADD] -------------- Flip Sprite ---------------
+        // หันหน้าซ้ายขวาตามค่า x
+        if (x > 0)
+        {
+            spriteRenderer.flipX = false; // หันขวา (สมมติภาพต้นฉบับหันขวา)
+        }
+        else if (x < 0)
+        {
+            spriteRenderer.flipX = true;  // หันซ้าย
+        }
+        // ----------------------------------------------------
+
+
         // ---------------- Door Enter ----------------
         if (playerIsNearDoor && y > 0.8f)
         {
@@ -139,7 +172,7 @@ public class Player : MonoBehaviour
         if (isHidden || stopX)
             x = 0f;
 
-        Vector3 move = new(x, 0, 0);
+        Vector3 move = new Vector3(x, 0, 0);
         Vector3 newPosition = transform.position + move * currentSpeed * Time.deltaTime;
 
         if (useBoundaries)
@@ -155,11 +188,11 @@ public class Player : MonoBehaviour
         // ---------------- Footstep Sound ----------------
         // อ่าน input เดิน
         Vector2 moveInput = playerInput.actions["Move"].ReadValue<Vector2>();
-        bool isMoving = Mathf.Abs(moveInput.x) > 0.1f;
+        bool isMovingCheck = Mathf.Abs(moveInput.x) > 0.1f; // เปลี่ยนชื่อตัวแปรกันชนกับข้างบน
         bool isRunning = GameManager.instance.isRunning;
 
         // --------- FOOTSTEP SYSTEM ----------
-        if (isMoving)
+        if (isMovingCheck)
         {
             float interval = isRunning ? runInterval : walkInterval;
 
@@ -196,10 +229,6 @@ public class Player : MonoBehaviour
 
             footstepTimer = 0f;
         }
-
-
-
-
     }
 
 
@@ -208,6 +237,9 @@ public class Player : MonoBehaviour
     // ------------------------------------------------------------
     void StartHiding()
     {
+        hidingSource.PlayOneShot(openDoor);
+        hidingSource.clip = hidingClip;
+        hidingSource.Play();
         isHidden = true;
         spriteRenderer.enabled = false;
         col.enabled = false;
@@ -221,6 +253,11 @@ public class Player : MonoBehaviour
 
     void StopHiding()
     {
+        hidingSource.PlayOneShot(openDoor);
+        if (hidingSource.isPlaying)
+        { 
+            hidingSource.Stop(); 
+        }
         isHidden = false;
         spriteRenderer.enabled = true;
         col.enabled = true;
@@ -292,12 +329,12 @@ public class Player : MonoBehaviour
         }
         else if (other.CompareTag("Stalker"))
         {
-            if (!wasHitByStalker)
-            {
-                wasHitByStalker = true;
-                GameManager.instance.TakeDamage(25);
-                StartCoroutine(DoJumpscare());
-            }
+            
+          jumpscareAudio.PlayOneShot(jumpscare);
+            wasHitByStalker = true;
+          GameManager.instance.TakeDamage(25);
+          StartCoroutine(DoJumpscare());
+            
         }
         else if (other.CompareTag("Win"))
         {
@@ -340,9 +377,4 @@ public class Player : MonoBehaviour
         if (jumpscareImage != null)
             jumpscareImage.gameObject.SetActive(false);
     }
-
-
-
-   
-
 }

@@ -1660,6 +1660,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d1a1b2dc9401424ba6610c320a582af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashlightController
+  audioSource: {fileID: 2126049258}
+  Opendoor: {fileID: 8300000, guid: cf8afd6cfa6c44148b46b2f3ae5318e5, type: 3}
   speed: 8
 --- !u!4 &788591839
 Transform:
@@ -3065,6 +3067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FL_Manager
   jumpscareImage: {fileID: 1277418389}
+  jumpscareClip: {fileID: 8300000, guid: 9086effab51d1bb408602d5cedae16a1, type: 3}
   scareDuration: 1.5
   fadeSpeed: 3
   enableFlicker: 1

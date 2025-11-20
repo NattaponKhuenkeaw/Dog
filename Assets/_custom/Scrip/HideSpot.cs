@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class Coppy : MonoBehaviour
 {
+
+
     public DoorClick doorClick;
     private PlayerInput playerInput;
     private SpriteRenderer spriteRenderer;

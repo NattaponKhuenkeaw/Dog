@@ -9,7 +9,7 @@ public class FL_Manager : MonoBehaviour
 {
     [Header("Jumpscare Settings")]
     public Image jumpscareImage;    // รูป/วิดีโอ jumpscare ที่จะโผล่
-                                    // public AudioSource jumpscareSound;   // เสียงน่ากลัว
+    public AudioClip jumpscareClip;                                // public AudioSource jumpscareSound;   // เสียงน่ากลัว
     public float scareDuration = 1.5f;   // ระยะเวลาที่แสดง
     public float fadeSpeed = 5f;
 
@@ -99,8 +99,8 @@ public class FL_Manager : MonoBehaviour
 
     IEnumerator DoJumpscare()
     {
-        //if (jumpscareSound != null)
-        //  jumpscareSound.Play();
+        if (jumpscareClip != null)
+            AudioSource.PlayClipAtPoint(jumpscareClip, Camera.main.transform.position);
 
         // เฟดเข้าภาพ
         yield return StartCoroutine(FadeImage(1f));
