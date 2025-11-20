@@ -92,15 +92,12 @@ public class GameManager : MonoBehaviour
 
         if (health <= 0 && !isDead)
         {
-            energy = maxEnergy;
-            health = maxHealth;
+            
 
-            inventory.Clear();
-            RefreshHotbar();
-
-            deathScreen?.SetActive(true);
+            if (deathScreen != null) deathScreen.SetActive(true);
 
             isDead = true;
+            
         }
     }
 
@@ -112,7 +109,6 @@ public class GameManager : MonoBehaviour
     {
         health = Mathf.Clamp(health - damage, 0, maxHealth);
 
-        // เล่นเสียงเมื่อได้รับความเสียหาย
         if (audioSource != null && damageSound != null)
             audioSource.PlayOneShot(damageSound);
 
@@ -207,7 +203,8 @@ public class GameManager : MonoBehaviour
 
     public void OnToggleFlashlightButton()
     {
-        audioSource.PlayOneShot(flashlightSound);
+        if (audioSource != null && flashlightSound != null)
+            audioSource.PlayOneShot(flashlightSound);
         ToggleFlashlight(!flashlightOn);
     }
 
@@ -295,7 +292,8 @@ public class GameManager : MonoBehaviour
     {
         if (slots == null || slots.Length == 0)
         {
-            Debug.LogWarning("No slots assigned!");
+            // Debug.LogWarning("No slots assigned!"); 
+            // (Commented out warning to avoid spam if not needed in some scenes)
             return;
         }
 
@@ -307,11 +305,16 @@ public class GameManager : MonoBehaviour
             if (slots[i] == null) continue;
 
             slotButtons[i] = slots[i].GetComponent<Button>();
-            slotIcons[i] = slots[i].transform.Find("Icon").GetComponent<Image>();
+            Transform iconTransform = slots[i].transform.Find("Icon");
+            if (iconTransform != null)
+                slotIcons[i] = iconTransform.GetComponent<Image>();
 
             int index = i;
-            slotButtons[i].onClick.RemoveAllListeners();
-            slotButtons[i].onClick.AddListener(() => UseHotbarItem(index));
+            if (slotButtons[i] != null)
+            {
+                slotButtons[i].onClick.RemoveAllListeners();
+                slotButtons[i].onClick.AddListener(() => UseHotbarItem(index));
+            }
         }
 
         RefreshHotbar();
@@ -329,6 +332,8 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < slots.Length; i++)
         {
+            if (slotIcons[i] == null) continue; // ป้องกัน error ถ้าหา icon ไม่เจอ
+
             if (i < inventory.Count)
             {
                 slotIcons[i].sprite = inventory[i].icon;
@@ -355,12 +360,33 @@ public class GameManager : MonoBehaviour
     {
         return lockedDoors.Contains(doorID);
     }
+
+    // ------------------------------------------------------------
+    // NEW: Reset Game State
+    // ------------------------------------------------------------
+    public void ResetGameState()
+    {
+        health = maxHealth;
+        energy = maxEnergy;
+        flashlightPower = maxFlashlightPower;
+        isDead = false;
+
+        // รีเซ็ตคลังของและประตูที่ล็อก
+        inventory.Clear();
+        lockedDoors.Clear(); // *** สำคัญ: ล้างรายการประตูที่ถูกล็อก ***
+
+        RefreshHotbar();
+
+        if (deathScreen != null)
+            deathScreen.SetActive(false);
+
+
+
+        Debug.Log("Game Reset: Door locks cleared.");
+    }
 }
 
 
-// ------------------------------------------------------------
-// Item Data Structure
-// ------------------------------------------------------------
 [System.Serializable]
 public class ItemData
 {
