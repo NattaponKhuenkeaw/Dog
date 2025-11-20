@@ -56,6 +56,7 @@ public class Player : MonoBehaviour
     [Header("Energy Settings")]
     public bool useEnergySystem = true;
     public float runEnergyCost = 3f;
+    public float minRunEnergy = 25f;
 
     [Header("Jumpscare Settings")]
     public float jumpscareTime = 0.3f;
@@ -108,31 +109,49 @@ public class Player : MonoBehaviour
         float currentEnergy = GameManager.instance.energy;
 
         // ---------------- Movement & Run Logic ----------------
+        // ---------------- Movement & Run Logic ----------------
         if (inputMagnitude > 0.1f && inputMagnitude <= 0.6f)
         {
+            // เดินปกติ
             currentSpeed = walkSpeed;
             GameManager.instance.isRunning = false;
         }
         else if (inputMagnitude > 0.6f)
         {
-            currentSpeed = currentEnergy > 0 ? runSpeed : walkSpeed;
-            GameManager.instance.isRunning = (currentSpeed == runSpeed);
+            bool canRun = currentEnergy >= minRunEnergy;  // minRunEnergy = 25
+
+            if (canRun)
+            {
+                // วิ่งได้
+                currentSpeed = runSpeed;
+                GameManager.instance.isRunning = true;
+            }
+            else
+            {
+                // ❗ ห้ามวิ่ง (พลังไม่พอ)
+                currentSpeed = walkSpeed;
+                GameManager.instance.isRunning = false;
+            }
         }
         else
         {
+            // ❗ กรณีผู้เล่นไม่กดปุ่ม → ความเร็ว = 0 และต้องไม่ถือว่า “กำลังวิ่ง”
             currentSpeed = 0f;
             GameManager.instance.isRunning = false;
         }
 
+
+
         // [ADD] -------------- Animation Logic ---------------
         if (animator != null)
         {
-            // สั่ง Animator ให้เล่น/หยุด ตามที่มีการเคลื่อนที่ (inputMagnitude > 0)
+            // ส่งค่าความเร็วปัจจุบันไปที่ Animator
+            // (ต้องไปสร้าง Parameter แบบ Float ชื่อ "Speed" ใน Animator Controller ด้วย)
+            animator.SetFloat("Speed", currentSpeed);
+
+            // Optional: ยังคงเก็บ IsMoving ไว้เผื่อใช้เปลี่ยน state แบบปกติ
             bool isMoving = inputMagnitude > 0.01f;
             animator.SetBool("IsMoving", isMoving);
-
-            // (Optional) ถ้าอยากแยกท่าวิ่งด้วย ให้เพิ่ม Parameter "IsRunning" ใน Unity และ Uncomment บรรทัดนี้
-            // animator.SetBool("IsRunning", GameManager.instance.isRunning);
         }
 
         // [ADD] -------------- Flip Sprite ---------------
