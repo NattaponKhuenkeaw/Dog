@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Video; // 1. เพิ่มบรรทัดนี้เพื่อใช้งาน Video
 
 public class GameManager : MonoBehaviour
 {
@@ -22,6 +23,10 @@ public class GameManager : MonoBehaviour
     public float energy = 100f;
     public float maxEnergy = 100f;
     public GameObject deathScreen;
+
+    [Header("Death Video Settings")] // 2. เพิ่มส่วนตั้งค่า Video
+    public VideoPlayer deathVideoPlayer; // ลาก Video Player มาใส่ตรงนี้
+    public GameObject videoRawImage;     // GameObject ที่มี RawImage สำหรับแสดงวิดีโอ
 
     [Header("Door Lock System")]
     public HashSet<string> lockedDoors = new HashSet<string>();
@@ -90,15 +95,42 @@ public class GameManager : MonoBehaviour
         HandleFlashlight();
         UpdateUI();
 
+        // 3. แก้ไข Logic ตอนตาย
         if (health <= 0 && !isDead)
         {
-            
-
-            if (deathScreen != null) deathScreen.SetActive(true);
-
             isDead = true;
-            
+            StartCoroutine(PlayDeathSequence()); // เรียกใช้ Coroutine
         }
+    }
+
+    // 4. เพิ่ม Coroutine สำหรับเล่นวิดีโอ
+    private IEnumerator PlayDeathSequence()
+    {
+        // ปิด UI อื่นๆ ชั่วคราวถ้าจำเป็น (เช่น Hotbar)
+
+        // ถ้ามี Video Player และตั้งค่าไว้
+        if (deathVideoPlayer != null && deathVideoPlayer.clip != null)
+        {
+            if (videoRawImage != null)
+                videoRawImage.SetActive(true); // เปิดจอแสดงวิดีโอ
+
+            deathVideoPlayer.Play();
+
+            // รอจนกว่าวิดีโอจะจบ (ใช้ length ของคลิป)
+            yield return new WaitForSeconds((float)deathVideoPlayer.clip.length);
+
+            if (videoRawImage != null)
+                videoRawImage.SetActive(false); // ปิดจอเมื่อเล่นจบ
+        }
+        else
+        {
+            // ถ้าไม่มีวิดีโอ ให้รอแปปนึง หรือข้ามไปเลย
+            Debug.LogWarning("No Death Video Assigned!");
+        }
+
+        // แสดงหน้า Game Over หลัก (ที่มีปุ่ม Restart/Menu)
+        if (deathScreen != null)
+            deathScreen.SetActive(true);
     }
 
 
@@ -249,7 +281,10 @@ public class GameManager : MonoBehaviour
         Slider sceneHealthSlider,
         Slider sceneEnergySlider,
         Image sceneDamageOverlay,
-        GameObject sceneDeathScreen)
+        GameObject sceneDeathScreen,
+        VideoPlayer sceneVideoPlayer, 
+        GameObject sceneVideoRawImage 
+    )
     {
         flashlight2D = sceneFlashlight;
         flashlightText = sceneFlashlightText;
@@ -257,6 +292,8 @@ public class GameManager : MonoBehaviour
         energySlider = sceneEnergySlider;
         damageOverlay = sceneDamageOverlay;
         deathScreen = sceneDeathScreen;
+        deathVideoPlayer = sceneVideoPlayer;
+        videoRawImage = sceneVideoRawImage;
     }
 
 
@@ -380,13 +417,18 @@ public class GameManager : MonoBehaviour
         if (deathScreen != null)
             deathScreen.SetActive(false);
 
-
+        // ซ่อน Video UI ด้วยถ้ามีการรีเซ็ต
+        if (videoRawImage != null)
+            videoRawImage.SetActive(false);
 
         Debug.Log("Game Reset: Door locks cleared.");
     }
 }
 
 
+// ------------------------------------------------------------
+// Item Data Structure
+// ------------------------------------------------------------
 [System.Serializable]
 public class ItemData
 {

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering.Universal;
 using System.Collections;
+using UnityEngine.Video; // 1. อย่าลืมเพิ่มบรรทัดนี้
 
 public class SceneInitializer : MonoBehaviour
 {
@@ -15,75 +16,55 @@ public class SceneInitializer : MonoBehaviour
     public Image damageOverlay;
     public GameObject deathScreen;
 
+    [Header("Death Video References")] // 2. เพิ่มช่องสำหรับ Video
+    public VideoPlayer deathVideoPlayer;
+    public GameObject videoRawImage;
 
     [Header("Hotbar UI (3 ช่อง)")]
-    public GameObject[] hotbarSlots;   // ใส่ Slot1, Slot2, Slot3 ของ Scene นี้
+    public GameObject[] hotbarSlots;
 
     void Start()
     {
-
-
-
+        // ... (โค้ดส่วนย้าย Player เหมือนเดิม) ...
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null && GameManager.instance.lastPlayerPosition != Vector3.zero)
         {
-            // 3. ย้าย Player ไปยังตำแหน่งที่บันทึกไว้
             player.transform.position = GameManager.instance.lastPlayerPosition;
-
-            // 4. (สำคัญมาก) ล้างค่าที่จำไว้ ไม่งั้นทุกครั้งที่โหลด Scene นี้ Player จะวาร์ปกลับมาที่นี่ตลอด
-            
         }
-
-        GameManager.instance.deathScreen = deathScreen;
 
         // ------------------------------
         // ✅ 1. อัปเดต reference ให้ GameManager
         // ------------------------------
         if (GameManager.instance != null)
         {
+            // แก้ไขการเรียกใช้ InitScene โดยส่งค่า Video ไปด้วย
             GameManager.instance.InitScene(
                 flashlight2D,
                 flashlightText,
                 healthSlider,
                 energySlider,
                 damageOverlay,
-                deathScreen
+                deathScreen,
+                deathVideoPlayer, // <-- ส่ง VideoPlayer
+                videoRawImage     // <-- ส่ง RawImage GameObject
             );
 
-            // ------------------------------
-            // ✅ 2. ตั้งค่า Hotbar ใหม่ของ Scene นี้
-            // ------------------------------
+            // ... (ส่วน Hotbar เหมือนเดิม) ...
             if (hotbarSlots != null && hotbarSlots.Length > 0)
             {
                 GameManager.instance.slots = hotbarSlots;
-                GameManager.instance.InitHotbarUI();   // เรียกฟังก์ชันใน GameManager ที่เชื่อม UI
+                GameManager.instance.InitHotbarUI();
             }
-            else
-            {
-                Debug.LogWarning("⚠️ ยังไม่ได้กำหนด HotbarSlots ใน SceneInitializer!");
-            }
-            
-           
         }
-        else
-        {
-            Debug.LogWarning("❌ ไม่มี GameManager ใน Scene นี้!");
-        }
-
-        // ------------------------------
-        // ✅ 3. ปุ่มไฟฉาย
-        // ------------------------------
+        // ... (ส่วนปุ่มไฟฉาย เหมือนเดิม) ...
         if (flashlightButton != null)
         {
-            flashlightButton.onClick.RemoveAllListeners(); // ป้องกัน listener ซ้ำ
+            flashlightButton.onClick.RemoveAllListeners();
             flashlightButton.onClick.AddListener(() =>
             {
-                Debug.Log("🟡 Flashlight button clicked!");
                 if (GameManager.instance != null)
                     GameManager.instance.OnToggleFlashlightButton();
             });
         }
     }
-        
-
 }
