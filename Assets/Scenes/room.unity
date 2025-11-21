@@ -984,7 +984,7 @@ MonoBehaviour:
     - prefab: {fileID: 1285277526810035415, guid: e501606164817404f8c58ed57c3a8a6d, type: 3}
       spawnChance: 0.119
     - prefab: {fileID: 4197971400004130445, guid: 1abdf082db6c4944190117e290a3b957, type: 3}
-      spawnChance: 1
+      spawnChance: 0.5
   - roomPrefab: {fileID: 4482133891699726004, guid: d6c6469a0b2625f4889ca4972f943526, type: 3}
     empati: 2
     items:
@@ -995,7 +995,7 @@ MonoBehaviour:
     - prefab: {fileID: 1285277526810035415, guid: e501606164817404f8c58ed57c3a8a6d, type: 3}
       spawnChance: 0.091
     - prefab: {fileID: 4197971400004130445, guid: 1abdf082db6c4944190117e290a3b957, type: 3}
-      spawnChance: 1
+      spawnChance: 0.5
 --- !u!4 &576268049
 Transform:
   m_ObjectHideFlags: 0

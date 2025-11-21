@@ -381,7 +381,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 858.3884, y: 369}
+  m_AnchoredPosition: {x: 784, y: 369}
   m_SizeDelta: {x: 81.78, y: 65.3261}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &24489791
@@ -15775,7 +15775,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: -8255704691089433181, guid: cc64b0c609b4a4a4791079dc796e83ed, type: 3}
+  m_Sprite: {fileID: 8662631800227022069, guid: 63dea4cfcef4137428039bebd0293053, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -15795,8 +15795,8 @@ Transform:
   m_GameObject: {fileID: 723873098}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -72.623, y: -0.38, z: -3.6983}
-  m_LocalScale: {x: 0.93793416, y: 1.2519032, z: 1.4712694}
+  m_LocalPosition: {x: -72.618, y: -71.1, z: -6.7565}
+  m_LocalScale: {x: 0.42393687, y: 0.56584775, z: 0.66499907}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1304503375}
@@ -15909,6 +15909,7 @@ MonoBehaviour:
   maxX: 95
   useEnergySystem: 1
   runEnergyCost: 10
+  minRunEnergy: 25
   jumpscareTime: 1
   jumpscareAudio: {fileID: 143090187}
   jumpscare: {fileID: 8300000, guid: 441cb28d350f00848ba25df0b4883c1d, type: 3}
@@ -16998,7 +16999,7 @@ Transform:
   m_GameObject: {fileID: 873629718}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 678.00024, y: -314, z: 0}
+  m_LocalPosition: {x: 638, y: -314, z: 0}
   m_LocalScale: {x: 0.75829387, y: 0.75829387, z: 0.75829387}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19816,7 +19817,7 @@ Transform:
   m_GameObject: {fileID: 1328706403}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -75.21, y: -32.21, z: 0}
+  m_LocalPosition: {x: -74.01, y: -73.62, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20081,9 +20082,9 @@ MonoBehaviour:
   m_ComponentVersion: 2
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.275
+  m_FalloffIntensity: 0.311
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.08
+  m_Intensity: 0.15
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -20102,8 +20103,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.1796999, y: -0.15664983, z: 0}
-    m_Extent: {x: 4.5214, y: 4.9643497, z: 0}
+    m_Center: {x: 0.16620016, y: -2.0870504, z: 0}
+    m_Extent: {x: 13.3071995, y: 23.47845, z: 0}
   m_PointLightInnerAngle: 291.54993
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -20111,16 +20112,16 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 2.47
+  m_ShapeLightFalloffSize: 8.52
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
-  - {x: -1.514728, y: -2.5623584, z: 0}
-  - {x: 1.5915514, y: -2.6528027, z: 0}
-  - {x: 2.2327874, y: -0.4845623, z: 0}
-  - {x: 1.6642988, y: 1.7284971, z: 0}
-  - {x: 0.20499723, y: 2.3394172, z: 0}
-  - {x: -1.3593963, y: 1.8468789, z: 0}
-  - {x: -1.8716276, y: -0.18882124, z: 0}
+  - {x: -1.0351378, y: -17.044767, z: -0.0000008708553}
+  - {x: 2.7335298, y: -16.053946, z: -0.0000008708553}
+  - {x: 4.9544945, y: -0.27642956, z: -0.0000008708553}
+  - {x: 4.710764, y: 5.2131314, z: -0.0000008708553}
+  - {x: 0.9682607, y: 12.872925, z: -0.0000008708553}
+  - {x: -3.92784, y: 7.0037794, z: -0.0000008708553}
+  - {x: -4.6213565, y: 0.64437413, z: -0.0000008708553}
 --- !u!1 &1385333206
 GameObject:
   m_ObjectHideFlags: 0
