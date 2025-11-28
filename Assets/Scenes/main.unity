@@ -812,6 +812,7 @@ MonoBehaviour:
   greenDuration: 3
   redDuration: 3
   damageOnMove: 100
+  damageInterval: 1
   detectionRange: 10.64
   redLight: {fileID: 549248535}
   redLightColor: {r: 1, g: 0, b: 0, a: 1}
@@ -1005,6 +1006,7 @@ MonoBehaviour:
   greenDuration: 3
   redDuration: 3
   damageOnMove: 100
+  damageInterval: 1
   detectionRange: 10.64
   redLight: {fileID: 2117299543}
   redLightColor: {r: 1, g: 0, b: 0, a: 1}
@@ -15603,7 +15605,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 753231031929750050, guid: 99e3c90ec0751d64da516e148b87fac8, type: 3}
+  m_Sprite: {fileID: -5718498004857596463, guid: 48cc459472c88bc44863c8e3c7e19b33, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15795,7 +15797,7 @@ Transform:
   m_GameObject: {fileID: 723873098}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -72.618, y: -71.1, z: -6.7565}
+  m_LocalPosition: {x: -72.618, y: -0.58, z: -6.7565}
   m_LocalScale: {x: 0.42393687, y: 0.56584775, z: 0.66499907}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17663,6 +17665,7 @@ MonoBehaviour:
   greenDuration: 3
   redDuration: 3
   damageOnMove: 100
+  damageInterval: 1
   detectionRange: 10.64
   redLight: {fileID: 49875959}
   redLightColor: {r: 1, g: 0, b: 0, a: 1}
@@ -18221,7 +18224,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 806114825249948244, guid: fe9725f4dd96aed418a8f7c4f377e8bf, type: 3}
+  m_Sprite: {fileID: 4811436375684448651, guid: af2d694b6e176c6439c9d9c7dc066996, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -18407,7 +18410,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -7489201042088332902, guid: 42a224a3bf4a54e46832ea05f44ed7a4, type: 3}
+  m_Sprite: {fileID: -3509977158716407918, guid: fff03a862f81a3d4d9c35ec7eea587d7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -28247,6 +28250,7 @@ MonoBehaviour:
   greenDuration: 3
   redDuration: 3
   damageOnMove: 100
+  damageInterval: 1
   detectionRange: 10.64
   redLight: {fileID: 847789445}
   redLightColor: {r: 1, g: 0, b: 0, a: 1}

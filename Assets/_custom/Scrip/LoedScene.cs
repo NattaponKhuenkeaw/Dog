@@ -28,9 +28,15 @@ public class DoorClick : MonoBehaviour
         GameManager.instance.ResetGameState();
     }
 
-    
+    public void Quit()
+    {
+        Debug.Log("Game Quit");  // ทดสอบตอนอยู่ใน Editor
+        Application.Quit();      // คำสั่งออกจากเกมจริงตอน Build
+    }
 
- 
+
+
+
 
 
 

@@ -119,8 +119,7 @@ public class GameManager : MonoBehaviour
             // รอจนกว่าวิดีโอจะจบ (ใช้ length ของคลิป)
             yield return new WaitForSeconds((float)deathVideoPlayer.clip.length);
 
-            if (videoRawImage != null)
-                videoRawImage.SetActive(false); // ปิดจอเมื่อเล่นจบ
+           
         }
         else
         {
@@ -128,9 +127,11 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("No Death Video Assigned!");
         }
 
-        // แสดงหน้า Game Over หลัก (ที่มีปุ่ม Restart/Menu)
-        if (deathScreen != null)
+
+       /* if ( isDead = true && deathScreen != null )
+        {
             deathScreen.SetActive(true);
+        }*/
     }
 
 

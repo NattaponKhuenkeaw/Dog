@@ -351,7 +351,7 @@ public class Player : MonoBehaviour
             
           jumpscareAudio.PlayOneShot(jumpscare);
             wasHitByStalker = true;
-          GameManager.instance.TakeDamage(25);
+          GameManager.instance.TakeDamage(100);
           StartCoroutine(DoJumpscare());
             
         }
